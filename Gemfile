@@ -15,7 +15,8 @@ gem 'jquery-rails', '~> 4.3.1'
 # Bundle the extra gems:
 
 # gem 'heroku' install the Heroku toolbelt (https://toolbelt.heroku.com/) instead (as gem had some problems)
-gem "passenger", '~> 5.1.4'
+# gem "passenger", '~> 5.1.4'
+gem 'unicorn'
 
 gem "mysql2", '~> 0.4.6'
 gem 'haml', '~> 5.0.1'
