@@ -41,8 +41,12 @@ gem 'ts-delayed-delta',
   :ref    => '0aef2195f3acc1da048f18bc0191c90538565705'
 gem 'possibly', '~> 1.0.1'
 
+gem 'whenever', :require => false
+gem 'mina-whenever', :require => false
+gem 'mina-npm', :require => false
 gem 'delayed_job', '~> 4.1.3'
 gem 'delayed_job_active_record', '~> 4.1.2'
+gem 'daemons'
 
 gem 'web_translate_it', '~> 2.4.1'
 gem 'rails-i18n', '~> 5.0.4'
