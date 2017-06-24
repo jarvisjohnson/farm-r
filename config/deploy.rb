@@ -97,7 +97,7 @@ task :deploy do
     invoke :'rails:db_migrate'
     invoke :'rails:assets_precompile'
     invoke :'deploy:cleanup'
-    invoke :'whenever:update'    
+    # invoke :'whenever:update'    
 
     on launch: :environment do
       command "sudo service #{fetch(:user)} restart"
