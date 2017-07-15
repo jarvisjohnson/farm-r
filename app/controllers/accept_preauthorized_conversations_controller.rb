@@ -25,6 +25,8 @@ class AcceptPreauthorizedConversationsController < ApplicationController
     case payment_type
     when :paypal
       render_paypal_form("accept")
+    when :stripe
+      render_stripe_form("accept")      
     else
       raise ArgumentError.new("Unknown payment type: #{payment_type}")
     end
@@ -43,6 +45,8 @@ class AcceptPreauthorizedConversationsController < ApplicationController
     case payment_type
     when :paypal
       render_paypal_form("reject")
+   when :stripe
+      render_stripe_form("reject")      
     else
       raise ArgumentError.new("Unknown payment type: #{payment_type}")
     end
@@ -169,5 +173,30 @@ class AcceptPreauthorizedConversationsController < ApplicationController
       paypal_fees_url: PaypalCountryHelper.fee_link(community_country_code)
     }
   end
+
+
+  def render_stripe_form(preselected_action)
+    result = TransactionService::Transaction.get(community_id: @current_community.id, transaction_id: @listing_conversation.id)
+    transaction = result[:data]
+    commission_total = (transaction[:item_total] * transaction[:commission_from_seller]) / 100 #Money.new(transaction[:commission_from_seller]*100, @current_community.default_currency)
+    render action: :accept, locals: {
+      payment_gateway: :stripe,
+      listing: @listing,
+      listing_quantity: transaction[:listing_quantity],
+      booking: transaction[:booking],
+      orderer: @listing_conversation.starter,
+      sum: transaction[:item_total],
+      fee: commission_total, #transaction[:commission_total],
+      shipping_price: nil,
+      shipping_address: nil,
+      seller_gets: transaction[:checkout_total] - commission_total, #transaction[:commission_total],
+      form: @listing_conversation,
+      form_action: acceptance_preauthorized_person_message_path(
+        person_id: @current_user.id,
+        id: @listing_conversation.id
+      ),
+      preselected_action: preselected_action
+    }
+  end  
 
 end

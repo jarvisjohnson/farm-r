@@ -84,7 +84,9 @@ class Listing < ApplicationRecord
   accepts_nested_attributes_for :origin_loc, :destination_loc
 
   has_and_belongs_to_many :followers, :class_name => "Person", :join_table => "listing_followers"
-
+  has_many :txs, class_name: 'Transaction', foreign_key: :listing_id
+  has_many :bookings, through: :txs
+  
   belongs_to :category
 
   monetize :price_cents, :allow_nil => true, with_model_currency: :currency

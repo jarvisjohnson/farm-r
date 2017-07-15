@@ -98,17 +98,20 @@ class PreauthorizeTransactionsController < ApplicationController
                                  pickup_enabled:,
                                  availability_enabled:)
 
+
+      # raise
+
       validate_delivery_method(tx_params: tx_params, shipping_enabled: shipping_enabled, pickup_enabled: pickup_enabled)
         .and_then { validate_booking(tx_params: tx_params, quantity_selector: quantity_selector) }
         .and_then { |result|
-          if availability_enabled
-            validate_booking_timeslots(tx_params: tx_params,
-                                       marketplace_uuid: marketplace_uuid,
-                                       listing_uuid: listing_uuid,
-                                       quantity_selector: quantity_selector)
-          else
+          # if availability_enabled
+          #   validate_booking_timeslots(tx_params: tx_params,
+          #                              marketplace_uuid: marketplace_uuid,
+          #                              listing_uuid: listing_uuid,
+          #                              quantity_selector: quantity_selector)
+          # else
             Result::Success.new(result)
-          end
+          # end
       }
     end
 
@@ -217,7 +220,7 @@ class PreauthorizeTransactionsController < ApplicationController
         params: params_entity,
         shipping_enabled: listing.require_shipping_address,
         pickup_enabled: listing.pickup_enabled)
-
+      # raise
       Validator.validate_initiate_params(marketplace_uuid: @current_community.uuid_object,
                                          listing_uuid: listing.uuid_object,
                                          tx_params: tx_params,
@@ -250,7 +253,7 @@ class PreauthorizeTransactionsController < ApplicationController
         { listing_id: listing.id,
           listing_uuid: listing.uuid_object.to_s })
 
-      render "listing_conversations/initiate",
+      render "listing_conversations/stripe_preauthorize",
              locals: {
                start_on: tx_params[:start_on],
                end_on: tx_params[:end_on],
@@ -259,16 +262,16 @@ class PreauthorizeTransactionsController < ApplicationController
                quantity: tx_params[:quantity],
                author: query_person_entity(listing_entity[:author_id]),
                action_button_label: translate(listing_entity[:action_button_tr_key]),
-               expiration_period: MarketplaceService::Transaction::Entity.authorization_expiration_period(:paypal),
+               expiration_period: MarketplaceService::Transaction::Entity.authorization_expiration_period(:stripe),
                form_action: initiated_order_path(person_id: @current_user.id, listing_id: listing_entity[:id]),
                country_code: LocalizationUtils.valid_country_code(@current_community.country),
-               paypal_analytics_event: [
-                 "RedirectingBuyerToPayPal",
-                 { listing_id: listing.id,
-                   listing_uuid: listing.uuid_object.to_s,
-                   community_id: @current_community.id,
-                   marketplace_uuid: @current_community.uuid_object.to_s,
-                   user_logged_in: @current_user.present? }],
+               # paypal_analytics_event: [
+               #   "RedirectingBuyerToPayPal",
+               #   { listing_id: listing.id,
+               #     listing_uuid: listing.uuid_object.to_s,
+               #     community_id: @current_community.id,
+               #     marketplace_uuid: @current_community.uuid_object.to_s,
+               #     user_logged_in: @current_user.present? }],
                price_break_down_locals: TransactionViewUtils.price_break_down_locals(
                  booking:  is_booking,
                  quantity: quantity,
@@ -334,7 +337,7 @@ class PreauthorizeTransactionsController < ApplicationController
       shipping_total = calculate_shipping_from_model(tx_params: tx_params, listing_model: listing, quantity: quantity)
 
       tx_response = create_preauth_transaction(
-        payment_type: :paypal,
+        payment_type: :stripe,
         community: @current_community,
         listing: listing,
         listing_quantity: quantity,
@@ -343,6 +346,7 @@ class PreauthorizeTransactionsController < ApplicationController
         force_sync: !request.xhr?,
         delivery_method: tx_params[:delivery],
         shipping_price: shipping_total.total,
+        stripeToken: params[:stripeToken].present? ? params[:stripeToken] : nil,
         booking_fields: {
           start_on: tx_params[:start_on],
           end_on: tx_params[:end_on]
@@ -429,10 +433,8 @@ class PreauthorizeTransactionsController < ApplicationController
         redirect_to tx_response[:data][:gateway_fields][:redirect_url]
       end
     else
-      render json: {
-               op_status_url: transaction_op_status_path(tx_response[:data][:gateway_fields][:process_token]),
-               op_error_msg: t("error_messages.paypal.generic_error")
-             }
+      transaction_id = tx_response.data[:transaction][:id]
+      redirect_to person_transaction_path(:person_id => @current_user.id, :id => transaction_id)
     end
   end
 
@@ -532,7 +534,6 @@ class PreauthorizeTransactionsController < ApplicationController
         community_id: @current_community.id,
         listing_author_id: listing.author.id
       })
-
     unless ready[:data][:result]
       flash[:error] = t("layouts.notifications.listing_author_payment_details_missing")
 
@@ -547,20 +548,14 @@ class PreauthorizeTransactionsController < ApplicationController
   end
 
   def create_preauth_transaction(opts)
+    # gateway_fields =
+    #   {
+    #     merchant_brand_logo_url: logo_url,
+    #     success_url: success_paypal_service_checkout_orders_url,
+    #     cancel_url: cancel_paypal_service_checkout_orders_url(listing_id: opts[:listing].id)
+    #   }
 
-    # PayPal doesn't like images with cache buster in the URL
-    logo_url = Maybe(opts[:community])
-                 .wide_logo
-                 .select { |wl| wl.present? }
-                 .url(:paypal, timestamp: false)
-                 .or_else(nil)
-
-    gateway_fields =
-      {
-        merchant_brand_logo_url: logo_url,
-        success_url: success_paypal_service_checkout_orders_url,
-        cancel_url: cancel_paypal_service_checkout_orders_url(listing_id: opts[:listing].id)
-      }
+    gateway_fields = { stripeToken: opts[:stripeToken] }
 
     transaction = {
           community_id: opts[:community].id,

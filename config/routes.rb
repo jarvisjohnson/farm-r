@@ -105,7 +105,9 @@ Rails.application.routes.draw do
 
 
   devise_for :people, only: :omniauth_callbacks, controllers: { omniauth_callbacks: "sessions" }
-
+  get '/connect/oauth' => 'stripe_accounts#oauth', as: 'stripe_oauth'
+  get '/connect/confirm' => 'stripe#confirm', as: 'stripe_confirm'
+  get '/connect/deauthorize' => 'stripe#deauthorize', as: 'stripe_deauthorize'
   # Adds locale to every url right after the root path
   scope "(/:locale)", :constraints => { :locale => locale_matcher } do
 
@@ -120,6 +122,8 @@ Rails.application.routes.draw do
     get "/transactions/new" => "transactions#new", as: :new_transaction
 
     # preauthorize flow
+    get "/listings/:listing_id/stripe_preauthorize" => "preauthorize_transactions#stripe_preauthorize", :as => :stripe_preauthorize_payment
+    post "/listings/:listing_id/stripe_preauthorized" => "preauthorize_transactions#stripe_preauthorized", :as => :stripe_preauthorized_payment
 
     # Deprecated route (26-08-2016)
     get "/listings/:listing_id/book", :to => redirect { |params, request|
@@ -141,7 +145,8 @@ Rails.application.routes.draw do
     get "/listing_bubble/:id" => "listings#listing_bubble", :as => :listing_bubble
     get "/listing_bubble_multiple/:ids" => "listings#listing_bubble_multiple", :as => :listing_bubble_multiple
     get '/:person_id/settings/payments/paypal_account' => 'paypal_accounts#index', :as => :paypal_account_settings_payment
-
+    get '/:person_id/settings/payments/stripe_account' => 'stripe_accounts#index', :as => :stripe_account_settings_payment
+    
     # community membership related actions
 
     get  '/community_memberships/pending_consent' => 'community_memberships#pending_consent', as: :pending_consent
@@ -206,6 +211,9 @@ Rails.application.routes.draw do
           post :resend_verification_email
           get :edit_text_instructions
           get :test_welcome_email
+          get :payment_gateways
+          put :payment_gateways, to: 'communities#update_payment_gateway'
+          post :payment_gateways, to: 'communities#create_payment_gateway'
           get :social_media
           get :analytics
           put :social_media, to: 'communities#update_social_media'
@@ -436,6 +444,7 @@ Rails.application.routes.draw do
             get :billing_agreement_cancel
           end
         end
+        resource :stripe_account, only: [:index]
         resources :transactions, only: [:show, :new, :create]
         resource :settings do
           member do

@@ -5,7 +5,7 @@ module TransactionService::Store::PaymentSettings
   PaymentSettingsUpdate = EntityUtils.define_builder(
     [:active, :to_bool, default: false],
     [:community_id, :mandatory, :fixnum],
-    [:payment_gateway, :to_symbol, one_of: [:paypal, :braintree, :checkout, :none], default: :none],
+    [:payment_gateway, :to_symbol, one_of: [:stripe, :paypal, :braintree, :checkout, :none], default: :none],
     [:payment_process, :to_symbol, one_of: [:preauthorize, :postpay, :free], default: :free],
     [:commission_from_seller, :fixnum],
     [:minimum_price_cents, :fixnum],
@@ -18,7 +18,7 @@ module TransactionService::Store::PaymentSettings
   PaymentSettings = EntityUtils.define_builder(
     [:active, :to_bool, default: false],
     [:community_id, :mandatory, :fixnum],
-    [:payment_gateway, :to_symbol, one_of: [:paypal, :braintree, :checkout, :none], default: :none],
+    [:payment_gateway, :to_symbol, one_of: [:stripe, :paypal, :braintree, :checkout, :none], default: :none],
     [:payment_process, :to_symbol, one_of: [:preauthorize, :postpay, :free], default: :free],
     [:commission_from_seller, :fixnum],
     [:minimum_price_cents, :fixnum],

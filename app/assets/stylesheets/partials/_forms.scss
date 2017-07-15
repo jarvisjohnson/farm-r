@@ -17,6 +17,23 @@ textarea {
   }
 }
 
+select {
+  @include border-radius(em(5));
+  border: 2px solid $border;
+  min-height: 42px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none; 
+  background-color: white;
+  @include media(tablet) {
+    margin: 0;
+    padding: em(8) em(11);
+  }
+}
+.card-expiry-month, .card-expiry-year {
+  min-width: 40%;
+}
+
 input.auto_width {
   width:auto;
 }

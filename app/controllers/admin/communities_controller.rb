@@ -377,7 +377,52 @@ class Admin::CommunitiesController < Admin::AdminBaseController
 
   end
 
+
+  def payment_gateways
+    # Redirect if payment gateway in use but it's not stripe
+    return redirect_to edit_details_admin_community_path(@current_community) if @current_community.payment_gateway && !@current_community.stripe_in_use?
+
+    @selected_left_navi_link = "payment_gateways"
+    @community = @current_community
+    @payment_gateway = Maybe(@current_community).payment_gateway.or_else { StripePaymentGateway.new }
+
+    render :stripe_payment_gateway and return
+  end
+
+  def update_payment_gateway
+    # Redirect if payment gateway in use but it's not stripe
+    return redirect_to edit_details_admin_community_path(@current_community) if @current_community.payment_gateway && !@current_community.stripe_in_use?
+
+    stripe_params = payment_gateway_params
+    community_params = params.require(:community).permit(:commission_from_seller, :minimum_transaction_fee_cents)
+    unless @current_community.update_attributes(community_params)
+      flash.now[:error] = t("layouts.notifications.community_update_failed")
+      return render :payment_gateways
+    end
+
+    update(@current_community.payment_gateway,
+      stripe_params,
+      payment_gateways_admin_community_path(@current_community),
+      :payment_gateways)
+    TransactionProcess.update_all(process: params[:process]) if params[:process].present?
+    payment_setting = PaymentSettings.where(community_id: @current_community.id).last
+    if payment_setting.present?
+      payment_setting.update_attributes!(commission_from_seller: params[:community][:commission_from_seller].to_i, minimum_transaction_fee_cents: params[:community][:minimum_transaction_fee_cents].to_i)
+    else
+      payment_setting = PaymentSettings.create(active: true, community_id: @current_community.id, payment_gateway: :stripe, payment_process: :preauthorize, commission_from_seller: params[:community][:commission_from_seller].to_i, minimum_transaction_fee_cents: 100, minimum_price_cents: 100, confirmation_after_days: 7)
+    end
+  end
+
+  def create_payment_gateway
+    @current_community.payment_gateway = StripePaymentGateway.create(payment_gateway_params.merge(community_id: @current_community.id))
+    update_payment_gateway
+  end
+
   private
+
+  def payment_gateway_params
+    params.require(:payment_gateway).permit!
+  end
 
   def enqueue_status_sync!(address)
     Maybe(address)

@@ -181,7 +181,7 @@ class ListingsController < ApplicationController
       [nil, nil]
     end
 
-    payment_gateway = MarketplaceService::Community::Query.payment_type(@current_community.id)
+    payment_gateway = :stripe
     process = get_transaction_process(community_id: @current_community.id, transaction_process_id: @listing.transaction_process_id)
     form_path = new_transaction_path(listing_id: @listing.id)
     community_country_code = LocalizationUtils.valid_country_code(@current_community.country)
@@ -202,19 +202,36 @@ class ListingsController < ApplicationController
     availability_enabled = @listing.availability.to_sym == :booking
     blocked_dates_start_on = 1.day.ago.to_date
     blocked_dates_end_on = 12.months.from_now.to_date
+    # minimum_booking = @listing[:minimum_days].to_s
 
     blocked_dates_result =
-      if availability_enabled
+      # if FeatureFlagHelper.feature_enabled?(:availability) &&
+      #    @listing.availability.to_sym == :booking
 
-        get_blocked_dates(
-          start_on: blocked_dates_start_on,
-          end_on: blocked_dates_end_on,
-          community: @current_community,
-          user: @current_user,
-          listing: @listing)
-      else
+      #   get_blocked_dates(
+      #     start_on: blocked_dates_start_on,
+      #     end_on: blocked_dates_end_on,
+      #     community: @current_community,
+      #     user: @current_user,
+      #     listing: @listing)
+      # else
         Result::Success.new([])
+      # end
+
+    # CUSTOM CODE UNTIL SHARETRIBE RELEASES AVAILABILITY MANAGEMENT
+    blocked_dates = []
+    if @listing.bookings.count > 0
+      @listing.bookings.each do |booking|
+        # booking_end_plus_additional = booking.end_on + @listing[:additional_days].days - 1.days
+        booking_end_plus_additional = booking.end_on - 1.days
+        if booking.tx.status == 'paid' || booking.tx.status == 'disputed' || booking.tx.status == 'confirmed' || booking.tx.status == 'shipped'  || booking.tx.status == 'completed'
+          (booking.start_on..booking_end_plus_additional).each do |date|           
+            blocked_dates << date.in_time_zone.to_i
+          end
+        end
       end
+    end
+    # raise
 
     currency = Maybe(@listing.price).currency.or_else(Money::Currency.new(@current_community.currency))
 
@@ -234,6 +251,7 @@ class ListingsController < ApplicationController
       availability_enabled: availability_enabled,
       blocked_dates_result: blocked_dates_result,
       blocked_dates_end_on: DateUtils.to_midnight_utc(blocked_dates_end_on),
+      bookings: blocked_dates,
       currency_opts: MoneyViewUtils.currency_opts(I18n.locale, currency)
     }
 
@@ -294,8 +312,12 @@ class ListingsController < ApplicationController
     shape = get_shape(Maybe(params)[:listing][:listing_shape_id].to_i.or_else(nil))
     listing_uuid = UUIDUtils.create
 
-    if shape.present? && shape[:availability] == :booking
-      bookable_res = create_bookable(@current_community.uuid_object, listing_uuid, @current_user.uuid_object)
+    if FeatureFlagHelper.feature_enabled?(:availability) && shape.present? && shape[:availability] == :booking
+      auth_context = {
+        marketplace_id: @current_community.uuid_object,
+        actor_id: @current_user.uuid_object
+      }
+      bookable_res = create_bookable(@current_community.uuid_object, listing_uuid, @current_user.uuid_object, auth_context)
       unless bookable_res.success
         flash[:error] = t("listings.error.create_failed_to_connect_to_booking_service")
         return redirect_to new_listing_path
@@ -668,7 +690,6 @@ class ListingsController < ApplicationController
     # PaymentRegistrationGuard needs this to be set before posting
     @listing.transaction_process_id = shape[:transaction_process_id]
     @listing.listing_shape_id = shape[:id]
-
     payment_type = MarketplaceService::Community::Query.payment_type(@current_community.id)
     allow_posting, error_msg = payment_setup_status(
                      community: @current_community,
@@ -745,7 +766,7 @@ class ListingsController < ApplicationController
        minimum_commission: Money.new(0, currency),
        commission_from_seller: 0,
        minimum_price_cents: 0}
-    when matches([:paypal])
+    when matches([:stripe])
       p_set = Maybe(payment_settings_api.get_active(community_id: community.id))
         .select {|res| res[:success]}
         .map {|res| res[:data]}

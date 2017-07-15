@@ -246,6 +246,8 @@ CREATE TABLE `communities` (
   `small_cover_photo_processing` tinyint(1) DEFAULT NULL,
   `favicon_processing` tinyint(1) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT NULL,
+  `commission_from_seller` int(11) DEFAULT NULL,
+  `minimum_transaction_fee_cents` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_communities_on_uuid` (`uuid`),
   KEY `index_communities_on_domain` (`domain`),
@@ -1166,6 +1168,60 @@ CREATE TABLE `shipping_addresses` (
   `country_code` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_shipping_addresses_on_transaction_id` (`transaction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `stripe_accounts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stripe_accounts` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `person_id` varchar(22) DEFAULT NULL,
+  `publishable_key` varchar(255) DEFAULT NULL,
+  `secret_key` varchar(255) DEFAULT NULL,
+  `stripe_user_id` varchar(255) DEFAULT NULL,
+  `currency` varchar(255) DEFAULT NULL,
+  `stripe_account_type` varchar(255) DEFAULT NULL,
+  `stripe_account_status` text,
+  PRIMARY KEY (`id`),
+  KEY `index_stripe_accounts_on_person_id` (`person_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `stripe_payment_gateways`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stripe_payment_gateways` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `community_id` varchar(22) DEFAULT NULL,
+  `stripe_publishable_key` varchar(255) DEFAULT NULL,
+  `stripe_secret_key` varchar(255) DEFAULT NULL,
+  `stripe_client_id` varchar(255) DEFAULT NULL,
+  `commission_from_seller` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_stripe_payment_gateways_on_community_id` (`community_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `stripe_payments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stripe_payments` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `payer_id` varchar(22) DEFAULT NULL,
+  `recipient_id` varchar(22) DEFAULT NULL,
+  `organization_id` varchar(255) DEFAULT NULL,
+  `transaction_id` int(11) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `community_id` bigint(20) DEFAULT NULL,
+  `sum_cents` int(11) DEFAULT NULL,
+  `currency` varchar(255) DEFAULT NULL,
+  `stripe_transaction_id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_stripe_payments_on_community_id` (`community_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `testimonials`;
@@ -2114,6 +2170,12 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170314075755'),
 ('20170613153959'),
 ('20170613153960'),
-('20170613153961');
+('20170613153961'),
+('20170624015754'),
+('20170624020120'),
+('20170624020229'),
+('20170715143424'),
+('20170715161025'),
+('20170715214851');
 
 

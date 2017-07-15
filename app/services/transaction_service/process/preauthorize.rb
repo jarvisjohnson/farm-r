@@ -27,7 +27,7 @@ module TransactionService::Process
 
     def do_create(tx, gateway_fields)
       gateway_adapter = TransactionService::Transaction.gateway_adapter(tx[:payment_gateway])
-
+      # raise
       completion = gateway_adapter.create_payment(
         tx: tx,
         gateway_fields: gateway_fields,
@@ -63,31 +63,31 @@ module TransactionService::Process
           Result::Success.new()
         else
           booking_res =
-            if tx[:availability] != :booking
+            # if tx[:availability] != :booking
               Result::Success.new()
-            else
+            # else
 
-              initiate_booking(tx: tx).on_error { |error_msg, data|
-                logger.error("Failed to initiate booking", :failed_initiate_booking, tx.slice(:community_id, :id).merge(error_msg: error_msg))
+            #   initiate_booking(tx: tx).on_error { |error_msg, data|
+            #     logger.error("Failed to initiate booking", :failed_initiate_booking, tx.slice(:community_id, :id).merge(error_msg: error_msg))
 
-                void_res = gateway_adapter.reject_payment(tx: tx, reason: "")[:response]
+            #     void_res = gateway_adapter.reject_payment(tx: tx, reason: "")[:response]
 
-                void_res.on_success {
-                  logger.info("Payment voided after failed transaction", :void_payment, tx.slice(:community_id, :id))
-                }.on_error { |payment_error_msg, payment_data|
-                  logger.error("Failed to void payment after failed booking", :failed_void_payment, tx.slice(:community_id, :id).merge(error_msg: payment_error_msg))
-                }
-              }.on_success { |data|
-                response_body = data[:body]
-                booking = response_body[:data]
+            #     void_res.on_success {
+            #       logger.info("Payment voided after failed transaction", :void_payment, tx.slice(:community_id, :id))
+            #     }.on_error { |payment_error_msg, payment_data|
+            #       logger.error("Failed to void payment after failed booking", :failed_void_payment, tx.slice(:community_id, :id).merge(error_msg: payment_error_msg))
+            #     }
+            #   }.on_success { |data|
+            #     response_body = data[:body]
+            #     booking = response_body[:data]
 
-                TxStore.update_booking_uuid(
-                  community_id: tx[:community_id],
-                  transaction_id: tx[:id],
-                  booking_uuid: booking[:id]
-                )
-              }
-            end
+            #     TxStore.update_booking_uuid(
+            #       community_id: tx[:community_id],
+            #       transaction_id: tx[:id],
+            #       booking_uuid: booking[:id]
+            #     )
+            #   }
+            # end
 
           booking_res.on_success {
             Transition.transition_to(tx[:id], :preauthorized)
@@ -216,7 +216,8 @@ module TransactionService::Process
     end
 
     def ensure_can_execute!(tx:, allowed_states:)
-      tx_state = tx[:current_state]
+      tx = Transaction.find(tx[:id])
+      tx_state = tx.current_state.to_sym
 
       unless allowed_states.include?(tx_state)
         raise TransactionService::Transaction::IllegalTransactionStateException.new(

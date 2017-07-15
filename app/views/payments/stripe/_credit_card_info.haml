@@ -1,0 +1,27 @@
+.row
+  .col-12
+    %label
+      %span
+        = t("stripe_payments.card_number")
+    - if Rails.env.development?
+      %input#cardNumber{:autocomplete => "cc-number", "data-stripe" => "number", :pattern => "\\d*", :placeholder => "0000 0000 0000 0000", :type => "text", :class => "card-number stripe", :value => "4242424242424242"}
+    - else
+      %input#cardNumber{:autocomplete => "cc-number", "data-stripe" => "number", :pattern => "\\d*", :placeholder => "0000 0000 0000 0000", :type => "text", :class => "card-number stripe"}
+.row
+  .col-6
+    %label
+      / Needs translation
+      %span Expiration (MM/YY)                
+    %select#cardExpirationMonth{ "data-stripe" => "exp_month", :class => "card-expiry-month" }
+    %span / 
+    %select#cardExpirationYear{ :type => "select", "data-stripe" => "exp_year", :class => "card-expiry-year stripe"}    
+  .col-3.mobile-shrink
+    %label
+      %span
+        = t("stripe_payments.cvc")
+    %input#cardValidationCode{:autocomplete => "cc-csc", "data-stripe" => "cvc", :pattern => "\\d*", :type => "text", :class => "card-cvc stripe"}
+  .col-3.mobile-shrink
+    %label
+      / Needs translation
+      %span Post Code
+    %input#cardPostalCode{:autocomplete => "on", "data-stripe" => "address_zip", :pattern => "\\d*", :type => "text", :class => "card-postal-code stripe"}                 

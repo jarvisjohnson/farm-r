@@ -1,0 +1,34 @@
+.row
+  .col-12
+    %label
+      /Needs translation
+      %span Shipping Address
+    - if Rails.env.development?
+      %input#shipping_address_name{ :name => "shipping_address_name", :placeholder => "Name", :type => "text", :class => "shipping_address address-line1 stripe", :value => "Jarvis Johnson"}  
+    - else
+      %input#shipping_address_name{ :name => "shipping_address_name", :placeholder => "Name", :type => "text", :class => "shipping_address address-line1 stripe"}           
+.row
+  .col-12      
+    - if Rails.env.development?
+      %input#shipping_address_street1{ :name => "shipping_address_street1", "data-stripe" => "address_line1", :placeholder => "Shipping Address Line 1", :type => "text", :class => "shipping_address address-line1 stripe", :value => "PO BOX 1"}     
+    - else
+      %input#shipping_address_street1{ :name => "shipping_address_street1", "data-stripe" => "address_line1", :placeholder => "Shipping Address Line 1", :type => "text", :class => "shipping_address address-line1 stripe"}
+.row
+  .col-12
+    %input#shipping_address_street2{ :name => "shipping_address_street2", "data-stripe" => "address_line2", :placeholder => "Shipping Address Line 2", :type => "text", :class => "shipping_address address-line2 stripe"}
+.row
+  .col-6
+    - if Rails.env.development?
+      %input#shipping_address_city{ :name => "shipping_address_city", "data-stripe" => "address_city", :placeholder => "City", :type => "text", :class => "shipping_address address-city stripe", :value => "Brighton"}
+    - else
+      %input#shipping_address_city{ :name => "shipping_address_city", "data-stripe" => "address_city", :placeholder => "City", :type => "text", :class => "shipping_address address-city stripe"}  
+  .col-3
+    - if Rails.env.development?
+      %input#shipping_address_state_or_province{ :name => "shipping_address_state_or_province", "data-stripe" => "address_state", :placeholder => "State", :type => "text", :class => "shipping_address address-state stripe", :value => "VIC"}
+    - else
+      %input#shipping_address_state_or_province{ :name => "shipping_address_state_or_province", "data-stripe" => "address_state", :placeholder => "State", :type => "text", :class => "shipping_address address-state stripe"}    
+  .col-3
+    - if Rails.env.development?
+      %input#shipping_address_postal_code{ :name => "shipping_address_postal_code",  :pattern => "\\d*", :type => "text", :class => "shipping_address address-postal-code stripe", :value => "3121"}
+    - else
+      %input#shipping_address_postal_code{ :name => "shipping_address_postal_code",  :pattern => "\\d*", :placeholder => "Postcode", :type => "text", :class => "shipping_address address-postal-code stripe"}                         

@@ -112,6 +112,8 @@ default: &default_settings
   paypal_endpoint: sandbox
   # after authorization there is 3 day period before expiration
   paypal_expiration_period: 3
+  stripe_expiration_period: 3
+  expiration_period_units: hours
   # The domain that we want Paypal to send IPN notifications to
   # Note! You must also add the hook url for your production deployment
   # manually to your production paypal account profile.

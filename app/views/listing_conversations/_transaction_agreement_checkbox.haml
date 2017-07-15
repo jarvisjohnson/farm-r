@@ -1,10 +1,10 @@
 .row
   .col-12
     .checkbox-container
-      = check_box_tag :contract_agreed, "1", false, class: "required"
-      %label
-        = @community_customization.transaction_agreement_label
-        = link_to(t(".read_more"), "#", id: "transaction-agreement-read-more").html_safe
+      %input{:type => "checkbox", :id => "contract_agreed", :name => "contract_agreed"}
+      = label :contract_agreed, @community_customization.transaction_agreement_label, :class => "checkbox"
+      = link_to t(".read_more"), "#", :tabindex => "-1", :id => "transaction-agreement-read-more", :class => "form"
+      
 
 = render layout: "layouts/lightbox", locals: { id: "transaction-agreement-content"} do
   - text_with_line_breaks do

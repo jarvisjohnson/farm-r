@@ -275,6 +275,7 @@ window.ST = window.ST || {};
   // Initialize the listing type & category selection part of the form
   module.initialize_new_listing_form_selectors = function(locale, attribute_array, listing_form_menu_titles) {
     var ordered_attributes = ["category", "subcategory", "listing_shape"];
+    console.log(ordered_attributes);
     var selected_attributes = selectedAttributesFromQueryParams(window.location.search);
 
     // Reset the view to initial state

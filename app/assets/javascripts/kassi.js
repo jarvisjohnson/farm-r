@@ -904,3 +904,21 @@ function enableSamePageScroll() {
     return [];
   }
 }
+
+
+function initialize_stripe_preauthorize_form(locale, beforeSubmit) {
+  $('#transaction-agreement-read-more-stripe').click(function() { 
+    $('#transaction-agreement-content').lightbox_me({centered: true, zIndex: 1000000}); 
+  });
+  
+  var opts = {
+    errorPlacement: function(error, element) {
+      if (element.attr("name") == "listing_conversation[contract_agreed]") {
+        error.appendTo(element.parent().parent());
+      } else {
+        error.insertAfter(element);
+      }
+    }
+  }
+
+}

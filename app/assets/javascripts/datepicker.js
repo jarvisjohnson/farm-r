@@ -1,4 +1,4 @@
-window.ST = window.ST || {};
+window.ST = window.ST || {};
 
 (function(module) {
 
@@ -21,6 +21,8 @@ window.ST = window.ST || {};
       clonedDate.setDate(clonedDate.getDate() + 1);
       return clonedDate;
     });
+    console.log(disabledStartDates)
+    console.log(disabledEndDates)
     var now = new Date();
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     var dateRage = $('#'+ rangeContainerId);

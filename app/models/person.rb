@@ -89,7 +89,7 @@ class Person < ApplicationRecord
   has_many :emails, :dependent => :destroy, :inverse_of => :person
 
   has_one :location, -> { where(location_type: :person) }, :dependent => :destroy
-
+  has_one :stripe_account, :dependent => :destroy
   has_many :participations, :dependent => :destroy
   has_many :conversations, :through => :participations, :dependent => :destroy
   has_many :authored_testimonials, :class_name => "Testimonial", :foreign_key => "author_id", :dependent => :destroy
@@ -621,6 +621,18 @@ class Person < ApplicationRecord
     self.password_salt = nil
     super
   end
+
+  def stripe_account_connected?
+    stripe_account.present? && !stripe_account.stripe_user_id.nil?
+  end
+
+  def stripe_connected_and_tranfers_enabled?
+    if stripe_account_connected?
+      stripe_account.tranfers_enabled?
+    else
+      false
+    end
+  end  
 
   private
 

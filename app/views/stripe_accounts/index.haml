@@ -1,0 +1,29 @@
+- content_for :title_header do
+  %h1= t("layouts.no_tribe.settings")
+
+= render :partial => "layouts/left_hand_navigation", :locals => { :links => left_hand_navigation_links }
+
+.left-navi-section.settings-section.payment-settings
+  %h2= t("stripe_accounts.payout_info_title")
+  .row
+    = t("stripe_accounts.connect_info")
+  %br
+  .row.paypal-connected-email-row
+    - if community_ready_for_payments
+      - if @current_user.stripe_account_connected?
+        %h3.paypal-account-connected
+          %del Connect Stripe account
+          Connected!
+        .paypal-connected-email.paypal-account-connected
+          - if @stripe_account_detail.present?
+            Stripe account #{@stripe_account_detail.email} connected successfully.
+          - else
+            Stripe account #{@current_user.emails.first.address} connected successfully.
+        .paypal-connected-change
+          %a.btn.btn-lg.btn-primary{ href: stripe_deauthorize_path } Disconnect Account
+      - else
+        %a.btn.btn-lg.btn-primary{ href: stripe_oauth_path } Connect Stripe Account
+    - else
+      = t("stripe_accounts.admin_account_not_connected",
+        contact_admin_link: link_to(t("stripe_accounts.contact_admin_link_text"),
+        new_user_feedback_path)).html_safe

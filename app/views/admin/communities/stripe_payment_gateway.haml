@@ -1,0 +1,69 @@
+- content_for :extra_javascript do
+  / :javascript
+  /   ST.initializePayPalPreferencesForm(
+  /     "paypal_preferences_form",
+  /     [#{min_commission_percentage}, #{max_commission_percentage}]
+  /   )
+
+- content_for :title_header do
+  %h1
+    = t("layouts.admin.admin")
+    = "-"
+    = t("admin.communities.paypal_account.paypal_admin_account")
+
+/ .left-navi-section.payment-settings
+/   %h1= t("admin.paypal_accounts.marketplace_paypal_integration")
+
+
+= render :partial => "admin/left_hand_navigation", :locals => { :links => admin_links_for(@current_community) }
+
+.left-navi-section
+  %h2= t(".stripe_payment_gateway", :community_name => @community.name(I18n.locale))
+
+  = form_tag payment_gateways_admin_community_path(@community), :method => (@payment_gateway.new_record? ? :post : :put) do
+    .row.paypal-wizard
+      .col-12
+        .paypal-wizard-content
+          .row
+            .col-6
+              = label_tag :process, "Process", :class => "select"
+            .col-6
+              = select_tag :process, options_for_select([:none, :preauthorize], TransactionProcess.last.try(:process)), prompt: "Select Transaction Process", required: true
+        .paypal-wizard-divider
+        .paypal-wizard-content
+          = fields_for :payment_gateway, @payment_gateway do |form|
+
+            .row
+              .col-6
+                = form.label :stripe_publishable_key, t(".stripe_publishable_key"), :class => "input"
+              .col-6
+                = form.text_field :stripe_publishable_key, :class => "text_field"
+            .row
+              .col-6
+                = form.label :stripe_secret_key, t(".stripe_secret_key"), :class => "input"
+              .col-6
+                =form.text_field :stripe_secret_key, :class => "text_field"
+            .row
+              .col-6
+                = form.label :stripe_client_id, t(".stripe_client_id"), :class => "input"
+              .col-6
+                = form.text_field :stripe_client_id, :class => "text_field"
+
+          = fields_for :community, @current_community do |form|
+            .row
+              .col-6
+                = form.label :commission_from_seller, t(".commission_from_seller"), :class => "input"
+              .col-6
+                = form.number_field :commission_from_seller, in: 0..100, class: "paypal-preferences-input"
+                %label.paypal-horizontal-input-label-unit
+                  = "%"
+            .row
+              .col-6
+                = form.label :minimum_transaction_fee_cents, t("admin.paypal_accounts.minimum_transaction_fee_label"), :class => "input"
+              .col-6
+                = form.text_field :minimum_transaction_fee_cents, class: "paypal-preferences-input"
+                %label.paypal-horizontal-input-label-unit.paypal-preferences-currency-label
+                  = "cents"        
+
+          .row
+            = button_tag t("admin.communities.social_media.save")

@@ -23,10 +23,11 @@ module MarketplaceService
       # the change makes this code path unnecessary since community is
       # not anymore in charge of payment gateways.
       def payment_type(community_id)
-        Maybe(CommunityModel.find_by_id(community_id))
-          .map { |community|
-            if paypal_active?(community.id)
-              :paypal
+        Maybe(CommunityModel.find_by_id(community_id)).map { |community|
+            # if paypal_active?(community.id)
+            #   :paypal
+            if stripe_active?(community_id)
+              :stripe
             else
               nil
             end
@@ -37,13 +38,18 @@ module MarketplaceService
       # Privates
       #
 
-      def paypal_active?(community_id)
-        active_settings = Maybe(TxApi.settings.get_active(community_id: community_id))
-                          .select { |result| result[:success] }
-                          .map { |result| result[:data] }
-                          .or_else(nil)
+      # def paypal_active?(community_id)
+      #   active_settings = Maybe(TxApi.settings.get_active(community_id: community_id))
+      #                     .select { |result| result[:success] }
+      #                     .map { |result| result[:data] }
+      #                     .or_else(nil)
 
-        return active_settings && active_settings[:payment_gateway] == :paypal
+      #   return active_settings && active_settings[:payment_gateway] == :stripe
+      # end
+
+      def stripe_active?(community_id)
+        community = CommunityModel.find_by_id(community_id)
+        community.payments_in_use?
       end
 
     end

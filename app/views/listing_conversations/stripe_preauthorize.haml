@@ -1,0 +1,227 @@
+- content_for :extra_javascript do
+  = javascript_include_tag 'https://js.stripe.com/v2/'
+  :javascript
+    var stripePaymentForm = $("#transaction-form");
+    Stripe.setPublishableKey(#{raw @current_community.payment_gateway.stripe_publishable_key.to_json});
+    
+    // https://gist.github.com/saikat/1084146
+    // Select dropdowns fill 
+
+    function expMonth() {
+      var select = $(".card-expiry-month"),
+        month = new Date().getMonth() + 1;
+      for (var i = 1; i <= 12; i++) {
+        select.append($("<option value='"+i+"' "+(month === i ? "selected" : "")+">"+i+"</option>"))
+      }
+    };     
+
+    function formatDate(d) {
+        year = new Date().getFullYear() % 100;
+          if ( year < 10 ) yy = '0' + yy
+          return year
+    };     
+
+    function expYear() {      
+      var select = $(".card-expiry-year"),
+        year = formatDate(d);
+      for (var i = 0; i < 12; i++) {
+        select.append($("<option value='"+(year + i)+"' "+(i === 0 ? "selected" : "")+">"+(i + year)+"</option>"))
+      }      
+    };
+
+
+
+        var d = new Date(2011, 0, 30)  // 30 Jan 2011
+      
+
+    function addInputNames() {
+        // Not ideal, but jQuery's validate plugin requires fields to have names
+        // so we add them at the last possible minute, in case any javascript 
+        // exceptions have caused other parts of the script to fail.
+        $(".card-number").attr("name", "card-number"),
+        $(".card-cvc").attr("name", "card-cvc"),
+        $(".card-expiry-year").attr("name", "card-expiry-year"),
+        $(".card-postal-code").attr("name", "card-postal-code")        
+    }; 
+
+    function removeInputNames() {
+        $(".card-number").removeAttr("name"),
+        $(".card-cvc").removeAttr("name"),
+        $(".card-expiry-year").removeAttr("name"),
+        $(".card-postal-code").removeAttr("name")       
+    };
+
+
+    function stripeResponseHandler(status, response) {
+      // Grab the form:
+      var $form = $('#transaction-form');
+
+      if (response.error) { 
+        // Problem!
+        // Show the errors on the form:
+        $form.find('.payment-errors').html("Stripe has reported an error: " + response.error.message);
+        $form.find('.submit').prop('disabled', false); // Re-enable submission
+        // we add these names back in so we can revalidate properly
+        addInputNames();        
+
+      } else { 
+        // Token was created!
+        // Get the token ID:
+        var token = response.id;
+        $form.find('.submit').prop('disabled', true);
+
+        // Insert the token ID into the form so it gets submitted to the server:
+        $form.append($('<input type="hidden" name="stripeToken">').val(token));
+
+        // Submit the form:
+        $form.get(0).submit();
+      }
+    };
+
+    $(document).ready(function() {
+
+      initialize_stripe_preauthorize_form("#{I18n.locale}", function beforeSubmit(next) {
+      });
+   
+      expMonth();
+      expYear();
+
+
+      // add custom rules for credit card validating
+      jQuery.validator.addMethod("cardNumber", Stripe.validateCardNumber, "Please enter a valid card number");
+      jQuery.validator.addMethod("cardCVC", Stripe.validateCVC, "Please enter a valid security code");
+      jQuery.validator.addMethod("cardExpiry", function() {
+          return Stripe.validateExpiry($(".card-expiry-month").val(), 
+                                       $(".card-expiry-year").val())
+      }, "Please enter a valid expiration");     
+      
+      // We use the jQuery validate plugin to validate required params on submit
+      stripePaymentForm.validate({
+          submitHandler: function(form) {    
+            // remove the input field names for security
+            // we do this *before* anything else which might throw an exception
+            removeInputNames(); // THIS IS IMPORTANT!        
+            // Grab the form:
+            var $form = $('#transaction-form');
+            // Disable the submit button to prevent repeated clicks:
+            $form.find('.submit').prop('disabled', true);
+
+            // Request a token from Stripe:
+            Stripe.card.createToken($form, stripeResponseHandler);
+
+            // Prevent the form from being submitted:
+            return false;
+          },      
+          onkeyup: false,
+          // onfocusout: false,
+          // onclick: false,
+          // errorLabelContainer: ".payment-errors",
+          // // wrapper: "li",
+          // focusCleanup: true,
+          // success: "valid",
+          rules: {
+            "card-cvc" : {
+              cardCVC: true,
+            },
+            "card-number" : {
+              cardNumber: true,
+            },
+            "card-postal-code" : {
+              minlength: 4,
+              maxlength: 5
+            },
+            "card-expiry-year" : "cardExpiry" // we don't validate month separately
+          },
+          errorPlacement: function(error, element) {
+            if (element.attr("name") == "card-cvc" || element.attr("name") == "card-postal-code" || element.attr("name") == "card-expiry-year" ) {
+              error.insertAfter("#jquery-errors");
+            } else {
+              error.insertAfter(element);
+            }     
+          }   
+      });
+    
+
+      $(function () {
+        $("#message-toggle").change(function(){
+          $("#message-container").toggle(this.checked);
+        }).change(); //ensure visible state matches initially
+      });       
+
+      // adding the input field names is the last step, in case an earlier step errors                      
+      addInputNames();   
+
+    });
+
+- content_for :javascript do
+  initialize_send_message_form('#{I18n.locale}');
+
+
+- content_for :title_header do
+  %h1
+    = action_button_label
+    = link_to(listing[:title], listing_path(listing[:id]))
+
+#new_message_form.centered-section
+  - author_link = link_to(author[:display_name], person_path(author[:username]))
+
+  .preauthorize-section
+    .preauthorize-header
+      %h3.account-settings-text
+        = t("listing_conversations.preauthorize.details")
+
+    .settings-row
+      %ul.no-bullets
+        %li.item-detail.listing-details-top
+          = t("listing_conversations.preauthorize.by", listing: link_to("#{listing[:title]}", listing_path(listing[:id])), author: author_link).html_safe
+
+
+        %li.price-detail
+          = render partial: "transactions/price_break_down", locals: price_break_down_locals
+
+  = form_tag form_action, method: :post, id: "transaction-form" do
+    = hidden_field_tag(:start_on, start_on&.iso8601 )
+    = hidden_field_tag(:end_on, end_on&.iso8601 )
+    .preauthorize-section
+      .preauthorize-header
+        %h3.account-settings-text
+          = t("listing_conversations.preauthorize.payment")
+
+      .settings-row
+        = render partial: "payments/stripe/credit_card_info"
+
+        - if delivery_method && delivery_method == :shipping
+          = render :partial => "payments/stripe/shipping_address_fields"      
+
+        .row.without-margin
+          .col-12
+            .checkbox-container
+              = check_box_tag 'message-toggle'        
+              %label
+                = t("conversations.new.optional_message_to", author_name: link_to(author[:display_name], person_path(author[:username]))).html_safe
+        .row 
+          .col-12#message-container
+            = text_area_tag :message, nil, :class => "text_area"
+
+        - if @current_community.transaction_agreement_in_use
+          = render :partial => "listing_conversations/transaction_agreement_checkbox"
+
+        - if quantity
+          = hidden_field_tag :quantity, quantity
+
+        - if delivery_method
+          = hidden_field_tag :delivery, delivery_method      
+
+        .row
+          .col-12
+            %input{ type: "submit", class: "button submit", value: t("stripe_payments.confirm_payment"), disabled: false}
+        .row
+          .col-12
+            %p
+              = t("listing_conversations.preauthorize.you_will_be_charged", author: author_link, expiration_period: expiration_period ).html_safe
+        .row
+          = render :partial => "layouts/payment_icons"
+
+
+  %noscript
+    = "For security reasons JavaScript has to be enabled"

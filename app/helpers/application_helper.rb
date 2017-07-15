@@ -454,6 +454,14 @@ module ApplicationHelper
 
     links << {
       :topic => :configure,
+      :text => t("admin.communities.stripe_payment_gateway.stripe_payment_gateway"),
+      :icon_class => icon_class("payments"),
+      :path => payment_gateways_admin_community_path(@current_community),
+      :name => "payment_gateways"
+    }    
+
+    links << {
+      :topic => :configure,
       :text => t("admin.communities.social_media.social_media"),
       :icon_class => icon_class("social_media"),
       :path => social_media_admin_community_path(@current_community),
@@ -523,12 +531,13 @@ module ApplicationHelper
     payment_type = MarketplaceService::Community::Query.payment_type(@current_community.id)
 
     if payment_type.present?
+      path = payment_settings_path(payment_type, @current_user)
 
       links << {
         :id => "settings-tab-payments",
         :text => t("layouts.settings.payments"),
         :icon_class => icon_class("payments"),
-        :path => paypal_account_settings_payment_path(@current_user),
+        :path => path,
         :name => "payments"
       }
 
@@ -536,6 +545,18 @@ module ApplicationHelper
 
     return links
   end
+
+  def payment_settings_path(gateway_type, person)
+    if gateway_type == :stripe
+      stripe_account_settings_payment_path(person)
+    end
+  end
+
+  def payment_settings_url(gateway_type, person, url_params)
+    if gateway_type == :stripe
+      stripe_account_settings_payment_url(person, url_params.merge(locale: person.locale))
+    end
+  end  
 
   # returns either "http://" or "https://" based on configuration settings
   def default_protocol

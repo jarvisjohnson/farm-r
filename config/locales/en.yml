@@ -321,6 +321,13 @@ en:
           initiated: "Waiting PayPal payment"
           pending_ext: "Waiting PayPal payment"
         not_available: "Not available"
+      stripe_payment_gateway:
+        stripe_payment_gateway: "Payment System"
+        environment: Environment
+        stripe_publishable_key: "Stripe Publishable Key"
+        stripe_secret_key: "Stripe Secret Key"
+        stripe_client_id: "Stripe Client Id"
+        commission_from_seller: "Commission percentage from seller"
       paypal_account:
         paypal_admin_account: "Payment system"
     custom_fields:
@@ -729,6 +736,43 @@ en:
       reject_preauthorized_request: "Not this time"
       confirm: "Mark completed"
       cancel: Dispute
+  stripe_accounts:
+    new:
+      add_payout_details: "Add your payout details"
+      first_name: "First name"
+      last_name: "Last name"
+      email: "Email address"
+      phone: "Phone number"
+      address_street_address: "Street address"
+      address_postal_code: "Zip/Postal code"
+      address_locality: City
+      address_region: State
+      date_of_birth: "Date of birth"
+      ssn: SSN
+      routing_number: "Routing number"
+      account_number: "Account number"
+      save: Save
+    show:
+      payout_details: "Your payout details"
+      first_name: "First name"
+      last_name: "Last name"
+      email: "Email address"
+      phone: "Phone number"
+      address_street_address: "Street address"
+      address_postal_code: "Zip/Postal code"
+      address_locality: City
+      address_region: State
+      date_of_birth: "Date of birth"
+      ssn: SSN
+      routing_number: "Routing number"
+      account_number: "Account number"
+  stripe_payments:
+    payment: Payment
+    card_number: Card Number
+    exp_month: Expiry Month (MM)
+    exp_year: Expiry Year (YY)
+    cvc: CVC
+    confirm_payment: Confirm Payment
   feedback:
     feedback_subject: "New feedback from %{service_name}"
     feedback_body: "%{author_name_and_email} has sent the following feedback from %{service_name}"
@@ -1615,7 +1659,15 @@ en:
       days: days
       night: night
       nights: nights
-      invalid_parameters: "Invalid values for new transaction"
+      invalid_parameters: "Payment could not be processed - Stripe returned a card error. Please try your transaction again."
+    stripe_preauthorize:
+      details: Details
+      by: "%{listing} by %{author}"
+      payment: Payment
+      exp: "Exp:"
+      you_will_be_charged: "You will be charged only if %{author} accepts the transaction. %{author} needs to accept the transaction within %{expiration_period} days. If %{author} declines or does not respond, no charge is made."
+      day: day
+      days: days
     transaction_agreement_checkbox:
       read_more: View.
   mapview:
@@ -1644,6 +1696,11 @@ en:
   okl:
     member_id: "Member id"
     member_id_or_email: "Member id or email"
+  payments:
+    stripe:
+      terms:
+        stripe_terms_also_included: "NOTE: Stripe is used as a payment gateway service and by using this website you also accept %{terms_link_text}, in addition to the terms below."
+        terms_link_text: "Stripe terms of use"
   paypal_accounts:
     payout_info_title: "Receiving funds"
     paypal_account_email_connected: "<del>Connect PayPal account</del> Completed!"
@@ -1705,6 +1762,80 @@ en:
     can_receive_payments: "You can now receive payments for your listings."
     paypal_account_connected_summary: "PayPal account <%{email}> connected successfully"
     paypal_permission_granted_summary: "Permission for transaction fees granted"
+  stripe_accounts:
+    connect_info: "Please complete the following steps to connect your account."
+    payout_info_title: "Receiving funds"
+    stripe_account_email_connected: "<del>Connect stripe account</del> Completed!"
+    payout_info_stripe: "%{service_name} uses stripe as its payment provider. A %{create_stripe_account_link} is required in order to accept payments for your listings, and must be connected to %{service_name}."
+    stripe_billing_agreement_made: "<del>Grant %{service_name} permission to charge a transaction fee</del> Completed!"
+    commission_permission_needed: "You will also need to grant %{service_name} permission to charge a transaction fee."
+    create_stripe_account_link_text: "stripe account"
+    connected_account: "stripe account '%{email}' connected successfully."
+    stripe_receive_funds_info_label_australia_only: "Your stripe account needs to be able to accept payments. This might require a Premier or Business account."
+    stripe_receive_funds_info_label: "Your stripe account needs to be able to accept payments. This might require a Business account."
+    stripe_receive_funds_info: "If you see an error when trying to connect your account to %{service_name}, upgrade your stripe account by %{upgrade_stripe_account_link}. It's free and easy. If you're an individual, stripe recommends using your name as the Business name."
+    upgrade_stripe_account_link_text: "logging in and clicking the upgrade link"
+    admin_account_not_connected: "Using %{service_name}'s payment system in order to receive payments is not possible since payments have not been set up. Please %{contact_admin_link} for details."
+    contact_admin_link_text: "contact the marketplace administrator"
+    you_are_ready_to_accept_payments: "You are ready to accept payments!"
+    commission: "%{commission} %"
+    settings:
+      enitity_date_of_birth: Date of Birth
+      enitity_street_address: Address
+      enitity_zip: ZIP/Postal Code
+      enitity_city: City
+      account_number: Account Number
+      identiy_document: Verification Document
+      payout_info_hint: For us to be able to pay out money to you, you must provide some information about yourself, and the number of the bank account you want the money paid to.
+      save: Update Information
+      create_account: Create
+      account_created: Stripe account created!
+      setup_complete: Nothing to do You have already setup your bank account
+      change_account_no: "Change"
+    new:
+      payout_info_you_need_to_connect: "In order to accept payments, you need to connect your stripe account with %{service_name}."
+      payout_info_text: "To connect your account, please complete the following steps."
+      contact_admin_link_text: "contact the administrator"
+      admin_account_not_connected: "Connecting your stripe account is not possible since %{service_name} has not set up payments. Please %{contact_admin_link} for details."
+      stripe_account_email: "Connect your stripe account"
+      stripe_account_email_placeholder: "Your stripe email address"
+      stripe_account_email_info_text: "If you don't have a stripe account, you can create one by %{create_stripe_account}. If you get an error message when connecting your stripe account, upgrade your stripe account to a business account. Upgrading is free and easy. If you are an individual, you can use your first and last name as your \"business name\". To upgrade your account, %{upgrade_stripe_account} and find the upgrade link."
+      create_stripe_account: "clicking here"
+      upgrade_stripe_account: "log in to your stripe account"
+      stripe_account_billing_agreement: "Grant %{service_name} permission to charge a transaction fee"
+      follow_steps: "Follow the steps below to start receiving funds:"
+      connect_stripe_account_title: "Connect your stripe account"
+      connect_stripe_account_title_with_step: "Step %{current_step}/%{total_steps}: Connect your stripe account"
+      connect_stripe_account_instructions: "Click on the button below to log in to stripe and connect your stripe account with %{service_name}."
+      connect_stripe_account: "Connect your stripe account"
+      stripe_account_billing_agreement_with_step: "Step %{current_step}/%{total_steps}: Grant permission to charge a transaction fee"
+      stripe_account_billing_agreement_info_both: "After you make a sale on %{service_name}, a service fee (%{commission_from_seller} of the total item price, excluding shipping, minimum fee %{minimum_commission}) will be charged from your stripe account. Permission to do this is required in order to accept payments in %{service_name}. The fee does not include %{stripe_info_link}."
+      stripe_account_billing_agreement_info_fixed: "After you make a sale on %{service_name}, a service fee of %{minimum_commission} will be charged from your stripe account. Permission to do this is required in order to accept payments in %{service_name}. The fee does not include %{stripe_info_link}."
+      stripe_account_billing_agreement_info_relative: "After you make a sale on %{service_name}, a service fee (%{commission_from_seller} of the total item price, excluding shipping) will be charged from your stripe account. Permission to do this is required in order to accept payments in %{service_name}. The fee does not include %{stripe_info_link}."
+      stripe_account_billing_agreement_info_none: "%{service_name} does not currently charge a service fee. If service fees are enabled, you will need to grant %{service_name} permission to charge a service fee in order to accept payments. The fee does not include %{stripe_info_link}."
+      stripe_info_link_text: "stripe's payment processing fee"
+      billing_agreement_description: "Grant %{service_name} permission to charge a transaction fee."
+      billing_agreement: "Grant permission"
+      permissions_not_granted: "Permission to connect with your stripe account were not granted."
+      could_not_fetch_redirect_url: "Could not fetch redirect URL to connect with stripe."
+      stripe_not_enabled: "stripe payments are not enabled."
+      billing_agreement_canceled: "The billing agreement was canceled"
+      billing_agreement_not_accepted: "You did not accept the billing agreement in stripe."
+      billing_agreement_wrong_account: "stripe accounts did not match. Please use the same stripe account that you connected in the first step."
+      something_went_wrong: "Something went wrong. Please try again. If the problem persists, please contact the site administrator."
+      account_not_verified: "You have not verified your stripe account. You need to go to stripe.com and verify your account before you can continue."
+      account_restricted: "Your stripe account is restricted and cannot be connected. Please log in to stripe.com to find out more or get in touch with stripe customer support to resolve the issue."
+    stripe_account_connected_title: "stripe account connected"
+    stripe_account_connected: "The stripe account <%{email}> has been connected with %{service_name}."
+    change_account: "Change stripe account"
+    missing: "You have open listings but your stripe account is not set up to receive payments. Connect your stripe account and grant %{service_name} permission to charge a transaction fee from your %{settings_link}."
+    from_your_payment_settings_link_text: "payment settings"
+    redirect_message: "Redirecting you to stripe. If nothing happens, click %{redirect_link}."
+    redirect_link_text: here
+    stripe_account_all_set_up: "Hooray, everything is set up!"
+    can_receive_payments: "You can now receive payments for your listings."
+    stripe_account_connected_summary: "stripe account <%{email}> connected successfully"
+    stripe_permission_granted_summary: "Permission for transaction fees granted"
   paypal:
     pay_with_paypal: "Proceed to payment"
     checkout_with_paypal: "Checkout with PayPal"
@@ -1714,6 +1845,15 @@ en:
       commission_payment_description: "Marketplace %{service_name} took this commission from transaction regarding %{listing_title}"
     wait_while_loading: "Please wait."
     chatting_with_paypal: "We are chatting with PayPal."
+  stripe:
+    pay_with_stripe: "Proceed to payment"
+    checkout_with_stripe: "Checkout with Stripe"
+    cancel_succesful: "Stripe payment succesfully canceled"
+    transaction:
+      commission_payment_name: "Commission payment for %{listing_title}"
+      commission_payment_description: "Marketplace %{service_name} took this commission from transaction regarding %{listing_title}"
+    wait_while_loading: "Please wait."
+    chatting_with_stripe: "We are chatting with Stripe."
   people:
     edit_links:
       activate: Activate
