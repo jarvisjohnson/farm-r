@@ -1,6 +1,10 @@
 class CreateStripePayments < ActiveRecord::Migration[5.1]
   def change
     create_table :stripe_payments do |t|
+
+      t.timestamps
+    end
+    change_table :stripe_payments do |t|
       t.string :payer_id
       t.string :recipient_id
       t.string :organization_id
@@ -11,7 +15,6 @@ class CreateStripePayments < ActiveRecord::Migration[5.1]
       t.string :currency
       t.string :stripe_transaction_id
 
-      t.timestamps
     end
   end
 end
