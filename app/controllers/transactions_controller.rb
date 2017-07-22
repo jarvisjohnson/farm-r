@@ -418,6 +418,18 @@ class TransactionsController < ApplicationController
       quantity = tx[:listing_quantity]
       show_subtotal = !!tx[:booking] || quantity.present? && quantity > 1 || tx[:shipping_price].present?
       total_label = (tx[:payment_process] != :preauthorize) ? t("transactions.price") : t("transactions.total")
+      # currency = tx[:listing_price].currency.iso_code
+
+      # vat_percentage = case currency
+      #   when "GBP"
+      #     @current_community.gbp_vat.to_f/100
+      #   when "EUR"
+      #     @current_community.gbp_vat.to_f/100
+      #   else
+      #     0
+      # end
+
+      # vat: 
 
       TransactionViewUtils.price_break_down_locals({
         listing_price: tx[:listing_price],
@@ -431,6 +443,7 @@ class TransactionsController < ApplicationController
         subtotal: show_subtotal ? tx[:listing_price] * quantity : nil,
         total: Maybe(tx[:payment_total]).or_else(tx[:checkout_total]),
         shipping_price: tx[:shipping_price],
+        vat: tx[:vat_price],
         total_label: total_label,
         unit_type: tx[:unit_type]
       })

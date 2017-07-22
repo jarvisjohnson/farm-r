@@ -179,6 +179,7 @@ class AcceptPreauthorizedConversationsController < ApplicationController
     result = TransactionService::Transaction.get(community_id: @current_community.id, transaction_id: @listing_conversation.id)
     transaction = result[:data]
     commission_total = (transaction[:item_total] * transaction[:commission_from_seller]) / 100 #Money.new(transaction[:commission_from_seller]*100, @current_community.default_currency)
+    commission_total = (transaction[:item_total] * transaction[:commission_from_seller]) / 100
     render action: :accept, locals: {
       payment_gateway: :stripe,
       listing: @listing,
@@ -187,7 +188,8 @@ class AcceptPreauthorizedConversationsController < ApplicationController
       orderer: @listing_conversation.starter,
       sum: transaction[:item_total],
       fee: commission_total, #transaction[:commission_total],
-      shipping_price: nil,
+      shipping_price: transaction[:shipping_price],
+      vat: transaction[:vat_price],
       shipping_address: nil,
       seller_gets: transaction[:checkout_total] - commission_total, #transaction[:commission_total],
       form: @listing_conversation,

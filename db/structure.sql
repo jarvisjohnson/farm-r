@@ -706,6 +706,7 @@ CREATE TABLE `listings` (
   `shipping_price_cents` int(11) DEFAULT NULL,
   `shipping_price_additional_cents` int(11) DEFAULT NULL,
   `availability` varchar(32) DEFAULT 'none',
+  `charge_vat` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_listings_on_uuid` (`uuid`),
   KEY `index_listings_on_open` (`open`),
@@ -1226,6 +1227,7 @@ CREATE TABLE `stripe_payments` (
   `sum_cents` int(11) DEFAULT NULL,
   `currency` varchar(255) DEFAULT NULL,
   `stripe_transaction_id` varchar(255) DEFAULT NULL,
+  `vat_price_cents` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_stripe_payments_on_community_id` (`community_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1337,6 +1339,7 @@ CREATE TABLE `transactions` (
   `availability` varchar(32) DEFAULT 'none',
   `booking_uuid` binary(16) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
+  `vat_price_cents` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_transactions_on_listing_id` (`listing_id`),
   KEY `index_transactions_on_conversation_id` (`conversation_id`),
@@ -2185,6 +2188,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170715214851'),
 ('20170722145409'),
 ('20170722165259'),
-('20170722165902');
+('20170722165902'),
+('20170722210305');
 
 

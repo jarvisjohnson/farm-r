@@ -5,17 +5,19 @@ module TransactionService::Gateway
 
     def create_payment(tx:, gateway_fields:, force_sync: nil)
       payment_gateway_id = StripePaymentGateway.where(community_id: tx[:community_id]).pluck(:id).first
-      # raise
-      shipping_price = tx[:shipping_price] || Money.new(0, tx[:currency])
-      
+    
+      shipping_price = tx[:shipping_price] || Money.new(0, tx[:unit_price].currency)
+
+      vat_price = tx[:vat_price] || Money.new(0, tx[:unit_price].currency)
+
       payment = StripePayment.create({
         transaction_id: tx[:id],
         community_id: tx[:community_id],
         status: :pending,
         payer_id: tx[:starter_id],
         recipient_id: tx[:listing_author_id],
-        currency: tx[:currency],
-        sum_cents: ((tx[:unit_price] * tx[:listing_quantity]) + shipping_price).cents
+        currency: tx[:unit_price].currency.iso_code,
+        sum_cents: ((tx[:unit_price] * tx[:listing_quantity]) + shipping_price + vat_price).cents
       })
 
       result, error = StripeSaleService.new(payment, gateway_fields).pay(false)
@@ -54,7 +56,8 @@ module TransactionService::Gateway
     def get_payment_details(tx:)
       # raise
       shipping_price = tx[:shipping_price] || Money.new(0, tx[:unit_price].currency)
-      total_price = (tx[:unit_price]) * tx[:listing_quantity] + shipping_price
+      vat_price = tx[:vat_price] || Money.new(0, tx[:unit_price].currency)
+      total_price = (tx[:unit_price]) * tx[:listing_quantity] + shipping_price + vat_price
       { payment_total: total_price,
         total_price: total_price,
         charged_commission: nil,
@@ -75,7 +78,7 @@ module TransactionService::Gateway
       destination_payment = Stripe::Charge.retrieve({ :id => destination_payment_id }, { :stripe_account => seller_stripe_id})
       # Set the description
       buyer = Person.find(transaction.starter_id)
-      destination_payment.description = "Closet Raid transaction from user: '#{buyer.username}' for '#{transaction.listing_title}'."
+      destination_payment.description = "Farm-r transaction from user: '#{buyer.username}' for '#{transaction.listing_title}'."
       destination_payment.save
     end    
 

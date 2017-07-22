@@ -52,6 +52,13 @@
       %span.initiate-transaction-shipping-price-value
         = MoneyViewUtils.to_humanized(shipping_price)
 
+  - if vat.present?
+    .initiate-transaction-shipping-price-wrapper
+      %span.initiate-transaction-shipping-price-label
+        VAT
+      %span.initiate-transaction-shipping-price-value
+        = MoneyViewUtils.to_humanized(vat)
+
   - if total.present?
     .initiate-transaction-total-wrapper
       %span.initiate-transaction-total-label

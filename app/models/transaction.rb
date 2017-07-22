@@ -36,6 +36,7 @@
 #  availability                      :string(32)       default("none")
 #  booking_uuid                      :binary(16)
 #  deleted                           :boolean          default(FALSE)
+#  vat_price_cents                   :integer
 #
 # Indexes
 #
@@ -72,6 +73,7 @@ class Transaction < ApplicationRecord
   monetize :minimum_commission_cents, with_model_currency: :minimum_commission_currency
   monetize :unit_price_cents, with_model_currency: :unit_price_currency
   monetize :shipping_price_cents, allow_nil: true, with_model_currency: :unit_price_currency
+  monetize :vat_price_cents, allow_nil: true, with_model_currency: :unit_price_currency
 
   scope :for_person, -> (person){
     joins(:listing)

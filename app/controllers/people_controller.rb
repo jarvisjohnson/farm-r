@@ -226,6 +226,27 @@ class PeopleController < Devise::RegistrationsController
       end
     end
 
+    # If person is updating their currency, update their listing currencies too
+    if params[:person] && params[:person][:currency] && (params[:person][:currency] != target_user.currency)
+      if target_user.listings.count > 0
+        target_user.listings.each do |l|
+          l.update_attributes(currency: params[:person][:currency])
+        end
+      end
+    end
+
+    # If person is updating their vat selection, update their listing vat selection too
+    if params[:person] && params[:person][:charge_vat]
+      charge_vat = params[:person][:charge_vat].to_i == 1? true : false
+      if charge_vat != target_user.charge_vat
+        if target_user.listings.count > 0
+          target_user.listings.each do |l|
+            l.update_attributes(charge_vat: charge_vat)
+          end
+        end
+      end
+    end
+
     #Check that people don't exploit changing email to be confirmed to join an email restricted community
     if params["request_new_email_confirmation"] && @current_community && ! @current_community.email_allowed?(params[:person][:email])
       flash[:error] = t("people.new.email_not_allowed")

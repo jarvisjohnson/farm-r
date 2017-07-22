@@ -78,6 +78,13 @@
           %span.conversation-shipping-price-value
             = MoneyViewUtils.to_humanized(shipping_price)
 
+      - if vat
+        .conversation-shipping-price-wrapper
+          %span.conversation-shipping-price-label
+            VAT
+          %span.conversation-shipping-price-value
+            = MoneyViewUtils.to_humanized(vat)
+
       - if payment_gateway == :paypal
         .conversation-total-wrapper
           %span.conversation-total-label

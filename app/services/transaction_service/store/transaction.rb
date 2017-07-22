@@ -26,6 +26,7 @@ module TransactionService::Store::Transaction
     [:commission_from_seller, :fixnum, :mandatory],
     [:automatic_confirmation_after_days, :fixnum, :mandatory],
     [:minimum_commission, :money, :mandatory],
+    [:vat_price, :money],
     [:content, :string],
     [:booking_uuid, :string, transform_with: UUIDUtils::RAW], # :string type for raw bytes
     [:booking_fields, :hash])
@@ -48,6 +49,7 @@ module TransactionService::Store::Transaction
     [:unit_selector_tr_key, :string],
     [:availability, :to_symbol, one_of: [:none, :booking]],
     [:shipping_price, :money],
+    [:vat_price, :money],
     [:delivery_method, :to_symbol, :mandatory, one_of: [:none, :shipping, :pickup]],
     [:payment_process, :to_symbol, one_of: [:none, :postpay, :preauthorize]],
     [:payment_gateway, :to_symbol, one_of: [:stripe, :paypal, :checkout, :braintree, :none]],
@@ -170,7 +172,7 @@ module TransactionService::Store::Transaction
     Maybe(model)
       .map { |m|
         hash = EntityUtils.model_to_hash(m)
-               .merge({unit_price: m.unit_price, minimum_commission: m.minimum_commission, shipping_price: m.shipping_price })
+               .merge({unit_price: m.unit_price, minimum_commission: m.minimum_commission, shipping_price: m.shipping_price, vat_price: m.vat_price })
 
         hash = add_opt_shipping_address(hash, m)
         hash = add_opt_booking(hash, m)

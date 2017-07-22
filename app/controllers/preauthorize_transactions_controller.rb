@@ -34,6 +34,7 @@ class PreauthorizeTransactionsController < ApplicationController
     [:start_on, :date, transform_with: PARSE_DATE],
     [:end_on, :date, transform_with: PARSE_DATE],
     [:message, :string],
+    [:vat, :to_bool],
     [:quantity, :to_integer, validate_with: IS_POSITIVE],
     [:contract_agreed, transform_with: ->(v) { v == "1" }]
   )
@@ -67,22 +68,43 @@ class PreauthorizeTransactionsController < ApplicationController
     end
   end
 
+  class VatTotal
+    attr_reader :item_total, :shipping_total, :vat_percentage
+
+    def initialize(item_total:, shipping_total:, vat_percentage:)
+      @item_total = item_total
+      @shipping_total = shipping_total
+      @vat_percentage = vat_percentage
+    end
+
+    def total
+      ( item_total.total + shipping_total.total ) * ( vat_percentage.to_f / 100 )
+    end
+  end
+
   class NoShippingFee
     def total
       0
     end
   end
 
-  class OrderTotal
-    attr_reader :item_total, :shipping_total
+  class NoVat
+    def total
+      0
+    end
+  end
 
-    def initialize(item_total:, shipping_total:)
+  class OrderTotal
+    attr_reader :item_total, :shipping_total, :vat_total
+
+    def initialize(item_total:, shipping_total:, vat_total:)
       @item_total = item_total
       @shipping_total = shipping_total
+      @vat_total = vat_total
     end
 
     def total
-      item_total.total + shipping_total.total
+      item_total.total + shipping_total.total + vat_total.total
     end
   end
 
@@ -99,7 +121,6 @@ class PreauthorizeTransactionsController < ApplicationController
                                  availability_enabled:)
 
 
-      # raise
 
       validate_delivery_method(tx_params: tx_params, shipping_enabled: shipping_enabled, pickup_enabled: pickup_enabled)
         .and_then { validate_booking(tx_params: tx_params, quantity_selector: quantity_selector) }
@@ -219,8 +240,9 @@ class PreauthorizeTransactionsController < ApplicationController
       tx_params = add_defaults(
         params: params_entity,
         shipping_enabled: listing.require_shipping_address,
-        pickup_enabled: listing.pickup_enabled)
-      # raise
+        pickup_enabled: listing.pickup_enabled,
+        vat_enabled: listing.charge_vat)
+
       Validator.validate_initiate_params(marketplace_uuid: @current_community.uuid_object,
                                          listing_uuid: listing.uuid_object,
                                          tx_params: tx_params,
@@ -237,13 +259,30 @@ class PreauthorizeTransactionsController < ApplicationController
 
       listing_entity = ListingQuery.listing(params[:listing_id])
 
+      currency = listing_entity[:price].currency.iso_code
+
+      vat_percentage = case currency
+        when "GBP"
+          @current_community.gbp_vat
+        when "EUR"
+          @current_community.gbp_vat
+        else
+          0
+      end
+
       item_total = ItemTotal.new(
         unit_price: listing_entity[:price],
         quantity: quantity)
 
       shipping_total = calculate_shipping_from_entity(tx_params: tx_params, listing_entity: listing_entity, quantity: quantity)
 
+      vat_total = VatTotal.new(
+        item_total: item_total,
+        shipping_total: shipping_total,
+        vat_percentage: vat_percentage)
+
       order_total = OrderTotal.new(
+        vat_total: vat_total,
         item_total: item_total,
         shipping_total: shipping_total)
 
@@ -259,6 +298,7 @@ class PreauthorizeTransactionsController < ApplicationController
                end_on: tx_params[:end_on],
                listing: listing_entity,
                delivery_method: tx_params[:delivery],
+               vat: tx_params[:vat],
                quantity: tx_params[:quantity],
                author: query_person_entity(listing_entity[:author_id]),
                action_button_label: translate(listing_entity[:action_button_tr_key]),
@@ -282,11 +322,11 @@ class PreauthorizeTransactionsController < ApplicationController
                  localized_unit_type: translate_unit_from_listing(listing_entity),
                  localized_selector_label: translate_selector_label_from_listing(listing_entity),
                  subtotal: subtotal_to_show(order_total),
+                 vat: vat_to_show(tx_params[:vat], vat_total),
                  shipping_price: shipping_price_to_show(tx_params[:delivery], shipping_total),
                  total: order_total.total,
                  unit_type: listing.unit_type)
              }
-
     }
 
     validation_result.on_error { |msg, data|
@@ -319,7 +359,8 @@ class PreauthorizeTransactionsController < ApplicationController
       tx_params = add_defaults(
         params: params_entity,
         shipping_enabled: listing.require_shipping_address,
-        pickup_enabled: listing.pickup_enabled)
+        pickup_enabled: listing.pickup_enabled,
+        vat_enabled: listing.charge_vat)
 
       is_booking = date_selector?(listing)
 
@@ -335,6 +376,28 @@ class PreauthorizeTransactionsController < ApplicationController
 
       quantity = calculate_quantity(tx_params: tx_params, is_booking: is_booking, unit: listing.unit_type)
       shipping_total = calculate_shipping_from_model(tx_params: tx_params, listing_model: listing, quantity: quantity)
+      
+      listing_entity = ListingQuery.listing(params[:listing_id])
+
+      currency = listing_entity[:price].currency.iso_code
+
+      vat_percentage = case currency
+        when "GBP"
+          @current_community.gbp_vat
+        when "EUR"
+          @current_community.gbp_vat
+        else
+          0
+      end
+
+      item_total = ItemTotal.new(
+        unit_price: listing_entity[:price],
+        quantity: quantity)
+
+      vat_total = VatTotal.new(
+        item_total: item_total,
+        shipping_total: shipping_total,
+        vat_percentage: vat_percentage)
 
       tx_response = create_preauth_transaction(
         payment_type: :stripe,
@@ -345,6 +408,8 @@ class PreauthorizeTransactionsController < ApplicationController
         content: tx_params[:message],
         force_sync: !request.xhr?,
         delivery_method: tx_params[:delivery],
+        vat_enabled: tx_params[:vat],
+        vat_price: vat_total.total,
         shipping_price: shipping_total.total,
         stripeToken: params[:stripeToken].present? ? params[:stripeToken] : nil,
         booking_fields: {
@@ -386,6 +451,13 @@ class PreauthorizeTransactionsController < ApplicationController
       quantity: quantity)
   end
 
+  # def calculate_vat_from_entity(tx_params:, listing_entity:, quantity:)
+  #   calculate_vat(
+  #     tx_params: tx_params,
+  #     vat: listing_entity[:vat],
+  #     quantity: quantity)
+  # end
+
   def calculate_shipping_from_model(tx_params:, listing_model:, quantity:)
     calculate_shipping(
       tx_params: tx_params,
@@ -405,7 +477,17 @@ class PreauthorizeTransactionsController < ApplicationController
     end
   end
 
-  def add_defaults(params:, shipping_enabled:, pickup_enabled:)
+  # def calculate_vat(tx_params:, vat:, quantity:)
+  #   if tx_params[:vat] == true
+  #     VatTotal.new(
+  #       vat: vat,
+  #       quantity: quantity)
+  #   else
+  #     NoVat.new
+  #   end
+  # end
+
+  def add_defaults(params:, shipping_enabled:, pickup_enabled:, vat_enabled:)
     default_shipping =
       case [shipping_enabled, pickup_enabled]
       when [true, false]
@@ -418,7 +500,18 @@ class PreauthorizeTransactionsController < ApplicationController
         {}
       end
 
+    default_vat = 
+      case [vat_enabled]
+      when [true]
+        {vat: true}
+      when [false]
+        {vat: false}
+      else
+        {vat: nil}
+      end
+
     params.merge(default_shipping)
+    params.merge(default_vat)
   end
 
   def handle_tx_response(tx_response)
@@ -478,12 +571,20 @@ class PreauthorizeTransactionsController < ApplicationController
     shipping_total.total if show_shipping_price?(delivery_method)
   end
 
+  def vat_to_show(vat, vat_total)
+    vat_total.total if show_vat_price?(vat)
+  end
+
   def show_subtotal?(order_total)
     order_total.total != order_total.item_total.unit_price
   end
 
   def show_shipping_price?(delivery_method)
     delivery_method == :shipping
+  end
+
+  def show_vat_price?(vat)
+    vat == true
   end
 
   def date_selector?(listing)
@@ -583,6 +684,10 @@ class PreauthorizeTransactionsController < ApplicationController
 
     if(opts[:delivery_method] == :shipping)
       transaction[:shipping_price] = opts[:shipping_price]
+    end
+
+    if(opts[:vat_enabled] == true)
+      transaction[:vat_price] = opts[:vat_price]
     end
 
     TransactionService::Transaction.create({

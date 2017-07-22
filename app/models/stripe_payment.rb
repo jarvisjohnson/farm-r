@@ -14,6 +14,7 @@
 #  sum_cents             :integer
 #  currency              :string(255)
 #  stripe_transaction_id :string(255)
+#  vat_price_cents       :integer
 #
 # Indexes
 #
@@ -74,7 +75,7 @@ class StripePayment < ApplicationRecord
   end  
 
   def calculated_commission
-    total_sum * total_commission_percentage / 100
+    total_sum * total_commission_percentage
   end  
 
   def total_commission
