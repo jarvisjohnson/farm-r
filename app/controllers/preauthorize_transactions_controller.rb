@@ -577,7 +577,8 @@ class PreauthorizeTransactionsController < ApplicationController
           payment_gateway: opts[:payment_type],
           payment_process: :preauthorize,
           booking_fields: opts[:booking_fields],
-          delivery_method: opts[:delivery_method]
+          delivery_method: opts[:delivery_method],
+          currency: opts[:listing].author.currency
     }
 
     if(opts[:delivery_method] == :shipping)

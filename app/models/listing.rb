@@ -116,6 +116,11 @@ class Listing < ApplicationRecord
     end
   end
 
+  # Overwrite currency
+  # def currency
+  #   Maybe(self.author).currency.or_else(self.author.community.currency)
+  # end
+
   def uuid_object=(uuid)
     self.uuid = UUIDUtils.raw(uuid)
   end

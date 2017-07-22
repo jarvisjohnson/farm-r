@@ -233,7 +233,7 @@ class ListingsController < ApplicationController
     end
     # raise
 
-    currency = Maybe(@listing.price).currency.or_else(Money::Currency.new(@current_community.currency))
+    currency = Maybe(Money::Currency.new(@listing.author.currency)).or_else(Money::Currency.new(@current_community.currency))
 
     view_locals = {
       form_path: form_path,
@@ -328,7 +328,7 @@ class ListingsController < ApplicationController
   end
 
   def create_listing(shape, listing_uuid)
-    with_currency = params.to_unsafe_hash[:listing].merge({currency: @current_community.currency})
+    with_currency = params.to_unsafe_hash[:listing].merge({currency: @current_user.currency})
     valid_until_enabled = !@current_community.hide_expiration_date
     listing_params = ListingFormViewUtils.filter(with_currency, shape, valid_until_enabled)
     listing_unit = Maybe(params.to_unsafe_hash)[:listing][:unit].map { |u| ListingViewUtils::Unit.deserialize(u) }.or_else(nil)
@@ -663,7 +663,8 @@ class ListingsController < ApplicationController
         end
 
       community_country_code = LocalizationUtils.valid_country_code(@current_community.country)
-      community_currency = Money::Currency.new(@current_community.currency)
+      currency = Maybe(@listing.author).currency.or_else(@current_community.currency)
+      community_currency = Money::Currency.new(currency)
 
       commission(@current_community, process).merge({
         shape: shape,

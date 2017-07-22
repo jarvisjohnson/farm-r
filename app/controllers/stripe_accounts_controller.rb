@@ -8,7 +8,7 @@ class StripeAccountsController < ApplicationController
 
   def index
     @selected_left_navi_link = "payments"
-
+    target_user = Person.find_by!(username: params[:person_id], community_id: @current_community.id)
     community_ready_for_payments = @current_community.stripe_in_use?
     unless community_ready_for_payments
       flash.now[:warning] = t("stripe_accounts.admin_account_not_connected",
@@ -17,7 +17,7 @@ class StripeAccountsController < ApplicationController
                                 new_user_feedback_path)).html_safe
     end
 
-    community_currency = @current_community.currency
+    user_currency = @current_user.currency ? @current_user.currency : @current_community.currency
     community_country_code = LocalizationUtils.valid_country_code(@current_community.country)
 
     Stripe.api_key = @current_community.payment_gateway.stripe_secret_key
@@ -28,7 +28,8 @@ class StripeAccountsController < ApplicationController
     render(locals: {
       community_ready_for_payments: community_ready_for_payments,
       left_hand_navigation_links: settings_links_for(@current_user, @current_community),
-      currency: community_currency,
+      currency: user_currency,
+      target_user: target_user,
     })
   end
 

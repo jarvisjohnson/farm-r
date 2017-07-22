@@ -27,3 +27,12 @@
       = t("stripe_accounts.admin_account_not_connected",
         contact_admin_link: link_to(t("stripe_accounts.contact_admin_link_text"),
         new_user_feedback_path)).html_safe
+  .row.paypal-connected-email-row
+    = form_for target_user do |form|
+      .row
+        .col-3
+          = form.label :currency, "Currency to Charge", :class => "input"
+        .col-6{ :style => "text-align: right" }
+          = form.select(:currency, ["GBP", "EUR"], :class => "text_field", :maxlength => "3")
+        .col-3
+          = form.button "Save", :class => "send_button_account", :style => "margin: 0;"

@@ -42,6 +42,7 @@
 #  min_days_between_community_updates :integer          default(1)
 #  deleted                            :boolean          default(FALSE)
 #  cloned_from                        :string(22)
+#  currency                           :string(255)      default("GBP")
 #
 # Indexes
 #
@@ -189,6 +190,10 @@ class Person < ApplicationRecord
     else
       UUIDUtils.parse_raw(self[:uuid])
     end
+  end
+
+  def currency=(val)
+    write_attribute :currency, val.upcase
   end
 
   # Creates a new email

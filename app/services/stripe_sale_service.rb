@@ -7,6 +7,7 @@ class StripeSaleService
     @payment = payment
     @community = payment.community
     @payer = payment.payer
+    @currency = @payer.currency
     @recipient = payment.recipient
     @amount = payment.sum_cents.to_f #/ subunit_to_unit
     @service_fee = payment.total_commission.cents.to_f #/ subunit_to_unit
@@ -35,11 +36,11 @@ class StripeSaleService
       # Get the credit card details submitted by the form
       # raise
       charge_attrs = {
-        :amount => @amount.to_i * 100, # amount in cents
-        :currency => @payment.currency,
+        :amount => @amount.to_i, # amount in cents
+        :currency => @currency,
         :source => token,
         :description => "Listing fee charge to #{@recipient.full_name} from #{@payer.full_name}",
-        :application_fee => @service_fee.to_i * 100, # amount in cents
+        :application_fee => @service_fee.to_i, # amount in cents
         :destination => @recipient.stripe_account.stripe_user_id,
         :capture => capture,
         :receipt_email => @recipient.emails.first.address,

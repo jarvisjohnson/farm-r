@@ -388,6 +388,7 @@ class PeopleController < Devise::RegistrationsController
         :street_address,
         :phone_number,
         :image,
+        :currency,
         :description,
         { location: [:address, :google_address, :latitude, :longitude] },
         :password,

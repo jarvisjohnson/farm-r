@@ -1103,6 +1103,7 @@ CREATE TABLE `people` (
   `min_days_between_community_updates` int(11) DEFAULT '1',
   `deleted` tinyint(1) DEFAULT '0',
   `cloned_from` varchar(22) DEFAULT NULL,
+  `currency` varchar(255) DEFAULT 'GBP',
   UNIQUE KEY `index_people_on_username_and_community_id` (`username`,`community_id`),
   UNIQUE KEY `index_people_on_uuid` (`uuid`),
   UNIQUE KEY `index_people_on_email` (`email`),
@@ -2176,6 +2177,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170624020229'),
 ('20170715143424'),
 ('20170715161025'),
-('20170715214851');
+('20170715214851'),
+('20170722145409');
 
 

@@ -20,35 +20,35 @@
           %option{value: unit_option[:value], selected: unit_option[:selected], data: { kind: unit_option[:kind] }}
             = unit_option[:display]
 
-    %small
-      - paypal_fee_info_link = capture do
-        %a.listing-paypal-fee-info-link#paypal_fee_info_link
-          = t(".paypal_fee_info_link_text")
+    / %small
+    /   - paypal_fee_info_link = capture do
+    /     %a.listing-paypal-fee-info-link#paypal_fee_info_link
+    /       = t(".paypal_fee_info_link_text")
 
-      - if !seller_commission_in_use && payment_gateway == :paypal
-        = t(".no_service_fee_you_will_get_paypal_text", :paypal_fee_info_link => paypal_fee_info_link).html_safe
-      - elsif seller_commission_in_use
-        - content_for :seller_commission_js do
-          :javascript
-            $(function() {
-              updateSellerGetsValue(
-                #{raw currency_opts.to_json},
-                "#listing_price",
-                "#fee_display",
-                #{commission_from_seller},
-                #{minimum_commission.format(decimal_mark: ".", delimiter: "", symbol: false)},
-                #{payment_gateway == :paypal});
-            });
-        - if run_js_immediately
-          = yield :seller_commission_js
-        - else
-          - content_for :extra_javascript do
-            = yield :seller_commission_js
+    /   - if !seller_commission_in_use && payment_gateway == :paypal
+    /     = t(".no_service_fee_you_will_get_paypal_text", :paypal_fee_info_link => paypal_fee_info_link).html_safe
+    /   - elsif seller_commission_in_use
+    /     - content_for :seller_commission_js do
+    /       :javascript
+    /         $(function() {
+    /           updateSellerGetsValue(
+    /             #{raw currency_opts.to_json},
+    /             "#listing_price",
+    /             "#fee_display",
+    /             #{commission_from_seller},
+    /             #{minimum_commission.format(decimal_mark: ".", delimiter: "", symbol: false)},
+    /             #{payment_gateway == :paypal});
+    /         });
+    /     - if run_js_immediately
+    /       = yield :seller_commission_js
+    /     - else
+    /       - content_for :extra_javascript do
+    /         = yield :seller_commission_js
 
-        - if payment_gateway == :paypal
-          = t(".after_service_fee_you_will_get_paypal_text", :sum_with_currency => '<span id="fee_display"></span>', :paypal_fee_info_link => paypal_fee_info_link).html_safe
-        - else
-          = t(".after_service_fee_you_will_get", :sum_with_currency => '<span id="fee_display"></span>').html_safe
+    /     - if payment_gateway == :paypal
+    /       = t(".after_service_fee_you_will_get_paypal_text", :sum_with_currency => '<span id="fee_display"></span>', :paypal_fee_info_link => paypal_fee_info_link).html_safe
+    /     - else
+    /       = t(".after_service_fee_you_will_get", :sum_with_currency => '<span id="fee_display"></span>').html_safe
 
 - if payment_gateway == :paypal
   = render layout: "layouts/lightbox", locals: { id: "paypal_fee_info_content"} do
