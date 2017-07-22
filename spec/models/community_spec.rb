@@ -92,6 +92,8 @@
 #  deleted                                    :boolean
 #  commission_from_seller                     :integer
 #  minimum_transaction_fee_cents              :integer
+#  gbp_vat                                    :integer          default(20)
+#  eur_vat                                    :integer          default(23)
 #
 # Indexes
 #

@@ -248,6 +248,8 @@ CREATE TABLE `communities` (
   `deleted` tinyint(1) DEFAULT NULL,
   `commission_from_seller` int(11) DEFAULT NULL,
   `minimum_transaction_fee_cents` int(11) DEFAULT NULL,
+  `gbp_vat` int(11) DEFAULT '20',
+  `eur_vat` int(11) DEFAULT '23',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_communities_on_uuid` (`uuid`),
   KEY `index_communities_on_domain` (`domain`),
@@ -1104,6 +1106,7 @@ CREATE TABLE `people` (
   `deleted` tinyint(1) DEFAULT '0',
   `cloned_from` varchar(22) DEFAULT NULL,
   `currency` varchar(255) DEFAULT 'GBP',
+  `charge_vat` tinyint(1) DEFAULT '0',
   UNIQUE KEY `index_people_on_username_and_community_id` (`username`,`community_id`),
   UNIQUE KEY `index_people_on_uuid` (`uuid`),
   UNIQUE KEY `index_people_on_email` (`email`),
@@ -1201,6 +1204,8 @@ CREATE TABLE `stripe_payment_gateways` (
   `stripe_secret_key` varchar(255) DEFAULT NULL,
   `stripe_client_id` varchar(255) DEFAULT NULL,
   `commission_from_seller` int(11) DEFAULT NULL,
+  `gbp_vat` int(11) DEFAULT '20',
+  `eur_vat` int(11) DEFAULT '23',
   PRIMARY KEY (`id`),
   KEY `index_stripe_payment_gateways_on_community_id` (`community_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2178,6 +2183,8 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170715143424'),
 ('20170715161025'),
 ('20170715214851'),
-('20170722145409');
+('20170722145409'),
+('20170722165259'),
+('20170722165902');
 
 

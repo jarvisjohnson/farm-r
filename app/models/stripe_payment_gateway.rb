@@ -10,6 +10,8 @@
 #  stripe_secret_key      :string(255)
 #  stripe_client_id       :string(255)
 #  commission_from_seller :integer
+#  gbp_vat                :integer          default(20)
+#  eur_vat                :integer          default(23)
 #
 # Indexes
 #

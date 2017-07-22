@@ -11,18 +11,21 @@
   .row.paypal-connected-email-row
     - if community_ready_for_payments
       - if @current_user.stripe_account_connected?
-        %h3.paypal-account-connected
-          %del Connect Stripe account
-          Connected!
-        .paypal-connected-email.paypal-account-connected
-          - if @stripe_account_detail.present?
-            Stripe account #{@stripe_account_detail.email} connected successfully.
-          - else
-            Stripe account #{@current_user.emails.first.address} connected successfully.
-        .paypal-connected-change
-          %a.btn.btn-lg.btn-primary{ href: stripe_deauthorize_path } Disconnect Account
+        .row
+          .col-8
+            %h3.paypal-account-connected
+              %del Connect Stripe account
+              Connected!
+            .paypal-connected-email.paypal-account-connected
+              - if @stripe_account_detail.present?
+                Stripe account #{@stripe_account_detail.email} connected successfully.
+              - else
+                Stripe account #{@current_user.emails.first.address} connected successfully.
+          .col-4{ :style => "text-align: right" }
+            .paypal-connected-change
+              %a.button.send_button_account{ href: stripe_deauthorize_path, :style => "margin: 0;" } Disconnect Account
       - else
-        %a.btn.btn-lg.btn-primary{ href: stripe_oauth_path } Connect Stripe Account
+        %a.send_button_account{ href: stripe_oauth_path, :style => "margin: 0;" } Connect Stripe Account
     - else
       = t("stripe_accounts.admin_account_not_connected",
         contact_admin_link: link_to(t("stripe_accounts.contact_admin_link_text"),
@@ -30,9 +33,17 @@
   .row.paypal-connected-email-row
     = form_for target_user do |form|
       .row
-        .col-3
+        .col-8
           = form.label :currency, "Currency to Charge", :class => "input"
-        .col-6{ :style => "text-align: right" }
+        .col-4
           = form.select(:currency, ["GBP", "EUR"], :class => "text_field", :maxlength => "3")
-        .col-3
+      .row
+        .col-8
+          = form.label :currency, "Charge VAT for transactions", :class => "input"
+        .col-4
+          = form.check_box :charge_vat, :class => "text_field"
+      .row
+        .col-8
+          = " "
+        .col-4{ :style => "text-align: right" }
           = form.button "Save", :class => "send_button_account", :style => "margin: 0;"

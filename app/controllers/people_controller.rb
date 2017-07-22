@@ -389,6 +389,7 @@ class PeopleController < Devise::RegistrationsController
         :phone_number,
         :image,
         :currency,
+        :charge_vat,
         :description,
         { location: [:address, :google_address, :latitude, :longitude] },
         :password,

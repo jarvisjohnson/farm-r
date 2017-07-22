@@ -43,6 +43,7 @@
 #  deleted                            :boolean          default(FALSE)
 #  cloned_from                        :string(22)
 #  currency                           :string(255)      default("GBP")
+#  charge_vat                         :boolean          default(FALSE)
 #
 # Indexes
 #

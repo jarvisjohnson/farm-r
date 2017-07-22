@@ -442,15 +442,15 @@ module ApplicationHelper
       :name => "listing_shapes"
     }
 
-    if PaypalHelper.paypal_active?(@current_community.id)
-      links << {
-        :topic => :configure,
-        :text => t("admin.communities.paypal_account.paypal_admin_account"),
-        :icon_class => icon_class("payments"),
-        :path => admin_paypal_preferences_path(),
-        :name => "paypal_account"
-      }
-    end
+    # if PaypalHelper.paypal_active?(@current_community.id)
+    #   links << {
+    #     :topic => :configure,
+    #     :text => t("admin.communities.paypal_account.paypal_admin_account"),
+    #     :icon_class => icon_class("payments"),
+    #     :path => admin_paypal_preferences_path(),
+    #     :name => "paypal_account"
+    #   }
+    # end
 
     links << {
       :topic => :configure,

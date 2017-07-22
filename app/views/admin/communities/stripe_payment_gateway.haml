@@ -63,7 +63,21 @@
               .col-6
                 = form.text_field :minimum_transaction_fee_cents, class: "paypal-preferences-input"
                 %label.paypal-horizontal-input-label-unit.paypal-preferences-currency-label
-                  = "cents"        
+                  = "cents"
+            .row
+              .col-6
+                = form.label :gbp_vat, "GBP Transaction VAT", :class => "input"
+              .col-6
+                = form.number_field :gbp_vat, in: 0..100, class: "paypal-preferences-input"
+                %label.paypal-horizontal-input-label-unit
+                  = "%"
+            .row
+              .col-6
+                = form.label :eur_vat, "EUR Transaction VAT", :class => "input"
+              .col-6
+                = form.number_field :eur_vat, in: 0..100, class: "paypal-preferences-input"
+                %label.paypal-horizontal-input-label-unit
+                  = "%"
 
           .row
             = button_tag t("admin.communities.social_media.save")

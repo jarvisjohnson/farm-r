@@ -394,7 +394,7 @@ class Admin::CommunitiesController < Admin::AdminBaseController
     return redirect_to edit_details_admin_community_path(@current_community) if @current_community.payment_gateway && !@current_community.stripe_in_use?
 
     stripe_params = payment_gateway_params
-    community_params = params.require(:community).permit(:commission_from_seller, :minimum_transaction_fee_cents)
+    community_params = params.require(:community).permit(:commission_from_seller, :minimum_transaction_fee_cents, :gbp_vat, :eur_vat)
     unless @current_community.update_attributes(community_params)
       flash.now[:error] = t("layouts.notifications.community_update_failed")
       return render :payment_gateways
