@@ -10,7 +10,7 @@ class CreateStripePayments < ActiveRecord::Migration[5.1]
       t.string :organization_id
       t.integer :transaction_id
       t.string :status
-      t.belongs_to :community, foreign_key: true
+      t.belongs_to :community
       t.integer :sum_cents
       t.string :currency
       t.string :stripe_transaction_id
