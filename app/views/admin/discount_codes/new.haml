@@ -1,0 +1,15 @@
+/ - content_for :javascript do
+
+- content_for :title_header do
+  %h1
+    = t("layouts.admin.admin")
+    = "-"
+    = t("admin.communities.discount_codes.new")
+
+= render :partial => "admin/left_hand_navigation", :locals => { :links => admin_links_for(@current_community) }
+
+.left-navi-section
+  %h5 Create a unique code here
+  = form_for [:admin, @code] do |form|
+    = form.text_field :code, :maxlength => "12", :class => "text_field"
+    = form.button "Create code"

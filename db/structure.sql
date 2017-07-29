@@ -469,6 +469,19 @@ CREATE TABLE `delayed_jobs` (
   KEY `index_delayed_jobs_on_attempts_and_run_at_and_priority` (`attempts`,`run_at`,`priority`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `discount_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `discount_codes` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) DEFAULT NULL,
+  `used` tinyint(1) DEFAULT '0',
+  `active` tinyint(1) DEFAULT '1',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `emails`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -2193,6 +2206,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170722165902'),
 ('20170722210305'),
 ('20170729155241'),
-('20170729160244');
+('20170729160244'),
+('20170729163238');
 
 

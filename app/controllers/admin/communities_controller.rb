@@ -1,3 +1,5 @@
+require 'csv'
+
 class Admin::CommunitiesController < Admin::AdminBaseController
   include CommunitiesHelper
 
@@ -389,6 +391,46 @@ class Admin::CommunitiesController < Admin::AdminBaseController
     render :stripe_payment_gateway and return
   end
 
+  def discount_codes
+
+    @selected_left_navi_link = "discount_codes"
+    @community = @current_community
+    @codes = DiscountCode.all
+    @code = DiscountCode.new
+
+    respond_to do |format|
+      format.html do
+        @codes = DiscountCode.all.paginate(page: params[:page], per_page: 50).order("#{sort_column} #{sort_direction}")
+      end
+      format.csv do
+        all_codes = DiscountCode.all
+        marketplace_name = if @community.use_domain
+          @community.domain
+        else
+          @community.ident
+        end
+
+        self.response.headers["Content-Type"] ||= 'text/csv'
+        self.response.headers["Content-Disposition"] = "attachment; filename=#{marketplace_name}-discount_codes-#{Date.today}.csv"
+        self.response.headers["Content-Transfer-Encoding"] = "binary"
+        self.response.headers["Last-Modified"] = Time.now.ctime.to_s
+
+        self.response_body = Enumerator.new do |yielder|
+          generate_csv_for(yielder, all_codes, @community)
+        end
+      end
+    end
+  end
+
+  def create_discount_code
+    raise
+    DiscountCode.create(code: params[:code])
+  end
+
+  def update_discount_code
+    raise
+  end
+
   def update_payment_gateway
     # Redirect if payment gateway in use but it's not stripe
     return redirect_to edit_details_admin_community_path(@current_community) if @current_community.payment_gateway && !@current_community.stripe_in_use?
@@ -518,4 +560,54 @@ class Admin::CommunitiesController < Admin::AdminBaseController
 
     Result.all(*updates)
   end
+
+  def sort_column
+    case params[:sort]
+    when "code"
+      "code"
+    when "created_date"
+      "created_at"
+    when "updated_date"
+      "updated_at"
+    when "active"
+      "active"
+    when "used"
+      "used"
+    else
+      "created_at"
+    end
+  end
+
+  def sort_direction
+    #prevents sql injection
+    if params[:direction] == "asc"
+      "asc"
+    else
+      "desc" #default
+    end
+  end
+
+  def generate_csv_for(yielder, codes, community)
+    # first line is column names
+    header_row = %w{
+      id
+      code
+      used
+      active
+      created_at
+      updated_at
+    }
+    yielder << header_row.to_csv(force_quotes: true)
+    codes.find_each do |code|
+      yielder << [
+        code.id,
+        code.code,
+        code.used,
+        code.active,
+        code.created_at,
+        code.updated_at
+      ].to_csv(force_quotes: true)
+    end
+  end
+
 end

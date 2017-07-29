@@ -1,0 +1,59 @@
+- content_for :javascript do
+  ST.initializeManageDiscountCodes();
+
+- content_for :title_header do
+  %h1
+    = t("layouts.admin.admin")
+    = "-"
+    = t("admin.communities.discount_codes.discount_codes")
+
+
+= render :partial => "admin/left_hand_navigation", :locals => { :links => admin_links_for(@current_community) }
+
+- content_for :ajax_update do
+  #admin-members-saving-posting-allowed.ajax-update-notice
+    %span.ajax-update-icon{:class => "#{icon_class("loading")} icon-fix" }
+    %span.ajax-update-text
+      = t("admin.communities.manage_members.saving_user_status")
+  #admin-members-saved-posting-allowed.ajax-update-success
+    %span.ajax-update-icon{:class => "#{icon_class("check")} icon-fix" }
+    %span.ajax-update-text
+      = t("admin.communities.manage_members.save_user_status_successful")
+  #admin-members-error-posting-allowed.ajax-update-error
+    = t("admin.communities.manage_members.save_user_status_error")
+
+= render :partial => "layouts/ajax_update_notification"
+
+.left-navi-section
+  %h2= t(".discount_codes")
+
+  #export-as-csv.right= link_to(" " + t("admin.communities.discount_codes.export_all_as_csv"), {format: :csv}, {class: "js-codes-csv-export " + icon_class("download")})
+  %span#admin_members_count= page_entries_info(@codes, :model => "DiscountCode")
+
+  %form
+    %table#admin_members_list
+      %thead
+        %tr
+          %th= render partial: "layouts/sort_link", locals: { column: "code", direction: sort_link_direction("code"), title: t("admin.communities.discount_codes.code") }
+          %th= render partial: "layouts/sort_link", locals: { column: "created_at", direction: sort_link_direction("created_date"), title: t("admin.communities.discount_codes.created_date") }
+          %th= render partial: "layouts/sort_link", locals: { column: "updated_at", direction: sort_link_direction("updated_date"), title: t("admin.communities.discount_codes.updated_date") }
+          %th= t("admin.communities.discount_codes.active")
+          %th= t("admin.communities.discount_codes.used")
+      %tbody
+        - @codes.each do |code|
+          %tr
+            %td.admin-members-full-name
+              = code.code
+            %td= l(code.created_at, :format => :short_date)
+            %td= l(code.updated_at, :format => :short_date)
+            %td{:style => "text-align: center"}= check_box_tag 'active', code.id, code.active, :class => "code-is-active", :disabled => code.used, data: { remote: true, url: url_for(action: :code_active, controller: :discount_codes, id: code.id), method: "POST"}
+            %td{:style => "text-align: center"}= check_box_tag "used[#{code.id}]", code.id, code.used, :class => "admin-members-is-admin", :disabled => true
+
+  .row
+    .col-12
+      = will_paginate @codes
+
+  %hr
+  .row
+    .col-12
+      = link_to t("admin.communities.discount_codes.create"), new_admin_discount_code_path

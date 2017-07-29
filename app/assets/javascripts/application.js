@@ -66,6 +66,7 @@
 //= require admin/custom_fields
 //= require admin/categories
 //= require admin/manage_members
+//= require admin/manage_discount_codes
 //= require admin/topbar_menu
 //= require admin/community_customizations
 //= require admin/listing_shapes

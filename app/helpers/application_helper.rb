@@ -458,7 +458,15 @@ module ApplicationHelper
       :icon_class => icon_class("payments"),
       :path => payment_gateways_admin_community_path(@current_community),
       :name => "payment_gateways"
-    }    
+    }
+
+    links << {
+      :topic => :configure,
+      :text => t("admin.communities.discount_codes.discount_codes"),
+      :icon_class => icon_class("payments"),
+      :path => discount_codes_admin_community_path(@current_community, sort: "created_date", direction: "desc"),
+      :name => "payment_gateways"
+    }
 
     links << {
       :topic => :configure,

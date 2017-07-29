@@ -214,6 +214,9 @@ Rails.application.routes.draw do
           get :payment_gateways
           put :payment_gateways, to: 'communities#update_payment_gateway'
           post :payment_gateways, to: 'communities#create_payment_gateway'
+          get :discount_codes
+          put :update_discount_code, to: 'communities#update_discount_code'
+          post :create_discount_code, to: 'communities#create_discount_code'
           get :social_media
           get :analytics
           put :social_media, to: 'communities#update_social_media'
@@ -298,6 +301,16 @@ Rails.application.routes.draw do
           delete :destroy_and_move
         end
         collection do
+          post :order
+        end
+      end
+      resources :discount_codes do
+        member do
+          get :remove
+          delete :destroy_and_move
+        end
+        collection do
+          post :code_active
           post :order
         end
       end
