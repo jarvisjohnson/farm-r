@@ -48,6 +48,7 @@
 #  shipping_price_additional_cents :integer
 #  availability                    :string(32)       default("none")
 #  charge_vat                      :boolean          default(FALSE)
+#  vat                             :integer          default(20)
 #
 # Indexes
 #

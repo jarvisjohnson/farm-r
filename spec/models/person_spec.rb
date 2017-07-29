@@ -44,6 +44,7 @@
 #  cloned_from                        :string(22)
 #  currency                           :string(255)      default("GBP")
 #  charge_vat                         :boolean          default(FALSE)
+#  vat                                :integer          default(20)
 #
 # Indexes
 #

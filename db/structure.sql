@@ -707,6 +707,7 @@ CREATE TABLE `listings` (
   `shipping_price_additional_cents` int(11) DEFAULT NULL,
   `availability` varchar(32) DEFAULT 'none',
   `charge_vat` tinyint(1) DEFAULT '0',
+  `vat` int(11) DEFAULT '20',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_listings_on_uuid` (`uuid`),
   KEY `index_listings_on_open` (`open`),
@@ -1108,6 +1109,7 @@ CREATE TABLE `people` (
   `cloned_from` varchar(22) DEFAULT NULL,
   `currency` varchar(255) DEFAULT 'GBP',
   `charge_vat` tinyint(1) DEFAULT '0',
+  `vat` int(11) DEFAULT '20',
   UNIQUE KEY `index_people_on_username_and_community_id` (`username`,`community_id`),
   UNIQUE KEY `index_people_on_uuid` (`uuid`),
   UNIQUE KEY `index_people_on_email` (`email`),
@@ -2189,6 +2191,8 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170722145409'),
 ('20170722165259'),
 ('20170722165902'),
-('20170722210305');
+('20170722210305'),
+('20170729155241'),
+('20170729160244');
 
 

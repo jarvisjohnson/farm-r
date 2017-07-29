@@ -44,6 +44,13 @@
           = form.check_box :charge_vat, :class => "text_field"
       .row
         .col-8
+          = form.label :vat, "VAT Percent", :class => "input"
+        .col-4
+          = form.number_field :vat, in: 0..100, class: "paypal-preferences-input"
+          %label.paypal-horizontal-input-label-unit
+            = "%"
+      .row
+        .col-8
           = " "
         .col-4{ :style => "text-align: right" }
           = form.button "Save", :class => "send_button_account", :style => "margin: 0;"

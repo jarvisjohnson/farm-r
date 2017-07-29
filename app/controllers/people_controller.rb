@@ -247,6 +247,18 @@ class PeopleController < Devise::RegistrationsController
       end
     end
 
+    # If person is updating their vat selection, update their listing vat selection too
+    if params[:person] && params[:person][:vat]
+      vat = params[:person][:vat]
+      if vat != target_user.vat
+        if target_user.listings.count > 0
+          target_user.listings.each do |l|
+            l.update_attributes(vat: vat)
+          end
+        end
+      end
+    end
+
     #Check that people don't exploit changing email to be confirmed to join an email restricted community
     if params["request_new_email_confirmation"] && @current_community && ! @current_community.email_allowed?(params[:person][:email])
       flash[:error] = t("people.new.email_not_allowed")
@@ -411,6 +423,7 @@ class PeopleController < Devise::RegistrationsController
         :image,
         :currency,
         :charge_vat,
+        :vat,
         :description,
         { location: [:address, :google_address, :latitude, :longitude] },
         :password,

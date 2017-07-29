@@ -261,14 +261,7 @@ class PreauthorizeTransactionsController < ApplicationController
 
       currency = listing_entity[:price].currency.iso_code
 
-      vat_percentage = case currency
-        when "GBP"
-          @current_community.gbp_vat
-        when "EUR"
-          @current_community.gbp_vat
-        else
-          0
-      end
+      vat_percentage = listing.author.vat
 
       item_total = ItemTotal.new(
         unit_price: listing_entity[:price],
@@ -381,14 +374,7 @@ class PreauthorizeTransactionsController < ApplicationController
 
       currency = listing_entity[:price].currency.iso_code
 
-      vat_percentage = case currency
-        when "GBP"
-          @current_community.gbp_vat
-        when "EUR"
-          @current_community.gbp_vat
-        else
-          0
-      end
+      vat_percentage = listing.author.vat
 
       item_total = ItemTotal.new(
         unit_price: listing_entity[:price],
