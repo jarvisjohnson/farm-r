@@ -26,6 +26,7 @@ class TransactionsController < ApplicationController
   TransactionForm = EntityUtils.define_builder(
     [:listing_id, :fixnum, :to_integer, :mandatory],
     [:message, :string],
+    [:discount_code, :string],
     [:quantity, :fixnum, :to_integer, default: 1],
     [:start_on, transform_with: ->(v) { Maybe(v).map { |d| TransactionViewUtils.parse_booking_date(d) }.or_else(nil) } ],
     [:end_on, transform_with: ->(v) { Maybe(v).map { |d| TransactionViewUtils.parse_booking_date(d) }.or_else(nil) } ]
@@ -40,7 +41,7 @@ class TransactionsController < ApplicationController
         ensure_can_start_transactions(listing_model: listing_model, current_user: @current_user, current_community: @current_community)
       }
     ).on_success { |((listing_id, listing_model, author_model, process, gateway))|
-      transaction_params = HashUtils.symbolize_keys({listing_id: listing_model.id}.merge(params.slice(:start_on, :end_on, :quantity, :delivery).permit!))
+      transaction_params = HashUtils.symbolize_keys({listing_id: listing_model.id}.merge(params.slice(:start_on, :end_on, :quantity, :delivery, :discount_code).permit!))
 
       case [process[:process], gateway]
       when matches([:none])
@@ -73,16 +74,16 @@ class TransactionsController < ApplicationController
       },
       ->(form, (listing_id, listing_model, author_model, process, gateway), _, _) {
         booking_fields = Maybe(form).slice(:start_on, :end_on).select { |booking| booking.values.all? }.or_else({})
-
+        discount_code = form[:discount_code]
         is_booking = date_selector?(listing_model)
         quantity = calculate_quantity(tx_params: {
+                                        discount_code: form[:discount_code],
                                         quantity: form[:quantity],
                                         start_on: booking_fields.dig(:start_on),
                                         end_on: booking_fields.dig(:end_on)
                                       },
                                       is_booking: is_booking,
                                       unit: listing_model.unit_type&.to_sym)
-
 
         transaction_service.create(
           {
@@ -101,6 +102,7 @@ class TransactionsController < ApplicationController
               unit_tr_key: listing_model.unit_tr_key,
               availability: listing_model.availability,
               listing_quantity: quantity,
+              discount_code: form[:discount_code],
               content: form[:message],
               booking_fields: booking_fields,
               payment_gateway: process[:process] == :none ? :none : gateway, # TODO This is a bit awkward

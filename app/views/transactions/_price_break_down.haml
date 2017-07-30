@@ -38,6 +38,13 @@
         %span.initiate-transaction-quantity-value
           = quantity
 
+  - if discount.present?
+    .initiate-transaction-shipping-price-wrapper
+      %span.initiate-transaction-shipping-price-label
+        Discount
+      %span.initiate-transaction-shipping-price-value
+        = MoneyViewUtils.to_humanized(discount)
+
   - if subtotal.present?
     .initiate-transaction-sum-wrapper
       %span.initiate-transaction-sum-label

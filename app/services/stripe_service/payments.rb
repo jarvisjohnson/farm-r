@@ -9,6 +9,8 @@ module StripeService
         transaction = Transaction.find(transaction_id)
         community   = Community.find(community_id)
         payment     = transaction.payment
+        raise
+        discount    = DiscountCode.find_by(code: transaction.discount)
         stripe_charge_id = payment.stripe_transaction_id
         # hold_amount = transaction.listing.hold_amount_cents rescue 0
         service_fee = payment.total_commission.cents.to_f
@@ -20,6 +22,7 @@ module StripeService
         begin
           charge = Stripe::Charge.retrieve(stripe_charge_id)
           result = charge.capture
+          discount.update_attributes(active: false, used: true)
         rescue Stripe::InvalidRequestError => e
           error = e.message
         rescue Exception => e
@@ -59,14 +62,14 @@ module StripeService
         community = Community.find(community_id)
 
         stripe_charge_id = transaction.payment.stripe_transaction_id
-
+        discount    = DiscountCode.find_by(code: transaction.discount)
 
         Stripe.api_key = transaction.payment.payment_gateway.stripe_secret_key
         result, error = nil, nil
         begin
           ch = Stripe::Charge.retrieve(stripe_charge_id)
           result = ch.refunds.create(:reverse_transfer => true)
-          # result = Stripe::Refund.create(charge: stripe_charge_id, :reverse_transfer => true)
+          discount.update_attributes(active: true, used: false)
         rescue Stripe::InvalidRequestError => e
           error = e.message
         rescue Exception => e

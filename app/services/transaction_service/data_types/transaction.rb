@@ -16,6 +16,7 @@ module TransactionService::DataTypes::Transaction
     [:item_total, :money, :mandatory],
     [:shipping_price, :money],
     [:vat_price, :money],
+    [:discount, :string],
     [:listing_author_id, :string, :mandatory],
     [:listing_quantity, :fixnum, default: 1],
     [:unit_type, :to_symbol, one_of: [:hour, :day, :night, :week, :month, :custom, nil]],

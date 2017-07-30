@@ -1355,6 +1355,8 @@ CREATE TABLE `transactions` (
   `booking_uuid` binary(16) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
   `vat_price_cents` int(11) DEFAULT NULL,
+  `discount` varchar(255) DEFAULT NULL,
+  `discount_total_cents` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_transactions_on_listing_id` (`listing_id`),
   KEY `index_transactions_on_conversation_id` (`conversation_id`),
@@ -2207,6 +2209,8 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170722210305'),
 ('20170729155241'),
 ('20170729160244'),
-('20170729163238');
+('20170729163238'),
+('20170729212703'),
+('20170730184448');
 
 

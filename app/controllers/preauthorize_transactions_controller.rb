@@ -34,6 +34,7 @@ class PreauthorizeTransactionsController < ApplicationController
     [:start_on, :date, transform_with: PARSE_DATE],
     [:end_on, :date, transform_with: PARSE_DATE],
     [:message, :string],
+    [:discount_code, :string],
     [:vat, :to_bool],
     [:quantity, :to_integer, validate_with: IS_POSITIVE],
     [:contract_agreed, transform_with: ->(v) { v == "1" }]
@@ -69,16 +70,31 @@ class PreauthorizeTransactionsController < ApplicationController
   end
 
   class VatTotal
-    attr_reader :item_total, :shipping_total, :vat_percentage
+    attr_reader :item_total, :shipping_total, :vat_percentage, :discount_total
 
-    def initialize(item_total:, shipping_total:, vat_percentage:)
+    def initialize(item_total:, shipping_total:, vat_percentage:, discount_total:)
       @item_total = item_total
       @shipping_total = shipping_total
+      @discount_total = discount_total
       @vat_percentage = vat_percentage
     end
 
     def total
-      ( item_total.total + shipping_total.total ) * ( vat_percentage.to_f / 100 )
+      ( item_total.total + shipping_total.total - discount_total.total ) * ( vat_percentage.to_f / 100 )
+    end
+  end
+
+  class DiscountTotal
+    attr_reader :item_total, :shipping_total, :discount_percentage
+
+    def initialize(item_total:, shipping_total:, discount_percentage:)
+      @item_total = item_total
+      @shipping_total = shipping_total
+      @discount_percentage = discount_percentage
+    end
+
+    def total
+      ( item_total.total + shipping_total.total ) * ( discount_percentage.to_f / 100 )
     end
   end
 
@@ -95,16 +111,17 @@ class PreauthorizeTransactionsController < ApplicationController
   end
 
   class OrderTotal
-    attr_reader :item_total, :shipping_total, :vat_total
+    attr_reader :item_total, :shipping_total, :vat_total, :discount_total
 
-    def initialize(item_total:, shipping_total:, vat_total:)
+    def initialize(item_total:, shipping_total:, vat_total:, discount_total:)
       @item_total = item_total
       @shipping_total = shipping_total
+      @discount_total = discount_total
       @vat_total = vat_total
     end
 
     def total
-      item_total.total + shipping_total.total + vat_total.total
+      item_total.total + shipping_total.total + vat_total.total - discount_total.total
     end
   end
 
@@ -255,6 +272,10 @@ class PreauthorizeTransactionsController < ApplicationController
     validation_result.on_success { |tx_params|
       is_booking = date_selector?(listing)
 
+      discount = DiscountCode.find_by(code: tx_params[:discount_code])
+      # See if the discount is active and hasn't been used
+      use_discount = !discount.nil? && discount.active? && !discount.used?
+
       quantity = calculate_quantity(tx_params: tx_params, is_booking: is_booking, unit: listing.unit_type)
 
       listing_entity = ListingQuery.listing(params[:listing_id])
@@ -263,18 +284,28 @@ class PreauthorizeTransactionsController < ApplicationController
 
       vat_percentage = listing.author.vat
 
+      # Set discount to commission
+      discount_percentage = use_discount ? @current_community.commission_from_seller : 0
+
       item_total = ItemTotal.new(
         unit_price: listing_entity[:price],
         quantity: quantity)
 
       shipping_total = calculate_shipping_from_entity(tx_params: tx_params, listing_entity: listing_entity, quantity: quantity)
 
+      discount_total = DiscountTotal.new(
+        item_total: item_total,
+        shipping_total: shipping_total,
+        discount_percentage: discount_percentage)
+
       vat_total = VatTotal.new(
         item_total: item_total,
+        discount_total: discount_total,
         shipping_total: shipping_total,
         vat_percentage: vat_percentage)
 
       order_total = OrderTotal.new(
+        discount_total: discount_total,
         vat_total: vat_total,
         item_total: item_total,
         shipping_total: shipping_total)
@@ -284,7 +315,6 @@ class PreauthorizeTransactionsController < ApplicationController
         "InitiatePreauthorizedTransaction",
         { listing_id: listing.id,
           listing_uuid: listing.uuid_object.to_s })
-
       render "listing_conversations/stripe_preauthorize",
              locals: {
                start_on: tx_params[:start_on],
@@ -293,6 +323,7 @@ class PreauthorizeTransactionsController < ApplicationController
                delivery_method: tx_params[:delivery],
                vat: tx_params[:vat],
                quantity: tx_params[:quantity],
+               discount: use_discount ? discount : nil,
                author: query_person_entity(listing_entity[:author_id]),
                action_button_label: translate(listing_entity[:action_button_tr_key]),
                expiration_period: MarketplaceService::Transaction::Entity.authorization_expiration_period(:stripe),
@@ -314,7 +345,8 @@ class PreauthorizeTransactionsController < ApplicationController
                  listing_price: listing_entity[:price],
                  localized_unit_type: translate_unit_from_listing(listing_entity),
                  localized_selector_label: translate_selector_label_from_listing(listing_entity),
-                 subtotal: subtotal_to_show(order_total),
+                 subtotal: subtotal_to_show(order_total, discount_total),
+                 discount: discount_total.total,
                  vat: vat_to_show(tx_params[:vat], vat_total),
                  shipping_price: shipping_price_to_show(tx_params[:delivery], shipping_total),
                  total: order_total.total,
@@ -365,9 +397,15 @@ class PreauthorizeTransactionsController < ApplicationController
     }
 
     validation_result.on_success { |tx_params|
+
       is_booking = date_selector?(listing)
 
+      discount = DiscountCode.find_by(code: tx_params[:discount_code])
+      # See if the discount is active and hasn't been used
+      use_discount = !discount.nil? && discount.active? && !discount.used?
+
       quantity = calculate_quantity(tx_params: tx_params, is_booking: is_booking, unit: listing.unit_type)
+
       shipping_total = calculate_shipping_from_model(tx_params: tx_params, listing_model: listing, quantity: quantity)
       
       listing_entity = ListingQuery.listing(params[:listing_id])
@@ -376,12 +414,21 @@ class PreauthorizeTransactionsController < ApplicationController
 
       vat_percentage = listing.author.vat
 
+      # Set discount to commission
+      discount_percentage = use_discount ? @current_community.commission_from_seller : 0
+
       item_total = ItemTotal.new(
         unit_price: listing_entity[:price],
         quantity: quantity)
 
+      discount_total = DiscountTotal.new(
+        item_total: item_total,
+        shipping_total: shipping_total,
+        discount_percentage: discount_percentage)
+
       vat_total = VatTotal.new(
         item_total: item_total,
+        discount_total: discount_total,
         shipping_total: shipping_total,
         vat_percentage: vat_percentage)
 
@@ -392,6 +439,8 @@ class PreauthorizeTransactionsController < ApplicationController
         listing_quantity: quantity,
         user: @current_user,
         content: tx_params[:message],
+        discount_total: discount_total.total,
+        discount: tx_params[:discount_code],
         force_sync: !request.xhr?,
         delivery_method: tx_params[:delivery],
         vat_enabled: tx_params[:vat],
@@ -549,8 +598,8 @@ class PreauthorizeTransactionsController < ApplicationController
     }.or_else(nil)
   end
 
-  def subtotal_to_show(order_total)
-    order_total.item_total.total if show_subtotal?(order_total)
+  def subtotal_to_show(order_total, discount_total)
+    ( order_total.item_total.total - discount_total.total ) if show_subtotal?(order_total)
   end
 
   def shipping_price_to_show(delivery_method, shipping_total)
@@ -643,7 +692,6 @@ class PreauthorizeTransactionsController < ApplicationController
     #   }
 
     gateway_fields = { stripeToken: opts[:stripeToken] }
-
     transaction = {
           community_id: opts[:community].id,
           community_uuid: opts[:community].uuid_object,
@@ -661,6 +709,8 @@ class PreauthorizeTransactionsController < ApplicationController
           unit_selector_tr_key: opts[:listing].unit_selector_tr_key,
           availability: opts[:listing].availability,
           content: opts[:content],
+          discount_total: opts[:discount_total],
+          discount: opts[:discount],
           payment_gateway: opts[:payment_type],
           payment_process: :preauthorize,
           booking_fields: opts[:booking_fields],

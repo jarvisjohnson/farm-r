@@ -28,6 +28,8 @@ module TransactionService::Store::Transaction
     [:minimum_commission, :money, :mandatory],
     [:vat_price, :money],
     [:content, :string],
+    [:discount, :string],
+    [:discount_total, :money],
     [:booking_uuid, :string, transform_with: UUIDUtils::RAW], # :string type for raw bytes
     [:booking_fields, :hash])
 
@@ -50,6 +52,8 @@ module TransactionService::Store::Transaction
     [:availability, :to_symbol, one_of: [:none, :booking]],
     [:shipping_price, :money],
     [:vat_price, :money],
+    [:discount, :string],
+    [:discount_total, :money],
     [:delivery_method, :to_symbol, :mandatory, one_of: [:none, :shipping, :pickup]],
     [:payment_process, :to_symbol, one_of: [:none, :postpay, :preauthorize]],
     [:payment_gateway, :to_symbol, one_of: [:stripe, :paypal, :checkout, :braintree, :none]],

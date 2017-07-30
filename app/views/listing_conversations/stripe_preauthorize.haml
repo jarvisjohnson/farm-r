@@ -146,7 +146,7 @@
         $("#message-toggle").change(function(){
           $("#message-container").toggle(this.checked);
         }).change(); //ensure visible state matches initially
-      });       
+      });
 
       // adding the input field names is the last step, in case an earlier step errors                      
       addInputNames();   
@@ -191,17 +191,27 @@
         = render partial: "payments/stripe/credit_card_info"
 
         - if delivery_method && delivery_method == :shipping
-          = render :partial => "payments/stripe/shipping_address_fields"      
+          = render :partial => "payments/stripe/shipping_address_fields"
 
         .row.without-margin
           .col-12
             .checkbox-container
-              = check_box_tag 'message-toggle'        
+              = check_box_tag 'message-toggle'
               %label
                 = t("conversations.new.optional_message_to", author_name: link_to(author[:display_name], person_path(author[:username]))).html_safe
         .row 
           .col-12#message-container
             = text_area_tag :message, nil, :class => "text_area"
+
+        / .row.without-margin
+        /   .col-12
+        /     .checkbox-container
+        /       = check_box_tag 'discount-toggle'
+        /       %label
+        /         = t("conversations.new.i_have_a_discount").html_safe
+        / .row 
+        /   .col-12#discount-container
+        = hidden_field_tag :discount_code, params[:discount_code]
 
         - if @current_community.transaction_agreement_in_use
           = render :partial => "listing_conversations/transaction_agreement_checkbox"

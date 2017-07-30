@@ -2,15 +2,20 @@
 # Do Stripe payment
 #
 class StripeSaleService
-  def initialize(payment, payment_params)
-    # subunit_to_unit = Money::Currency.new(payment.currency).subunit_to_unit
+  def initialize(payment, payment_params, discount)
+    raise
+    @discount = DiscountCode.find_by(code: discount)
+    # See if the discount is active and hasn't been used
+    use_discount = !@discount.nil? && @discount.active? && !@discount.used?
     @payment = payment
     @community = payment.community
     @payer = payment.payer
     @currency = @payer.currency
     @recipient = payment.recipient
-    @amount = payment.sum_cents.to_f #/ subunit_to_unit
-    @service_fee = payment.total_commission.cents.to_f #/ subunit_to_unit
+    # If discount works, remove the commission from the total
+    @amount = use_discount ? payment.sum_cents.to_f - payment.total_commission.cents.to_f : payment.sum_cents.to_f
+    # If discount works, don't charge the commission
+    @service_fee = use_discount ? 0 : payment.total_commission.cents.to_f
     @params = payment_params || {}
   end
 
@@ -34,7 +39,6 @@ class StripeSaleService
       charge, error = nil, nil
       token = @params[:stripeToken]
       # Get the credit card details submitted by the form
-      # raise
       charge_attrs = {
         :amount => @amount.to_i, # amount in cents
         :currency => @currency,

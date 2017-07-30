@@ -36,6 +36,14 @@
         - content_for :extra_javascript do
           :javascript
 
+            $("#discount-toggle").change(function(){
+              $("#discount-container").toggle(this.checked);
+            }).change(); //ensure visible state matches initially
+
+            $("input[name='discount_code_input']").on('input', function(){
+              $("input[name='discount_code']").val($(this).val());
+            });
+
             var disabledDates = [
               #{bookings.map { |d| "new Date(#{d.to_i * 1000})" }.join(",")}
             ];
@@ -117,9 +125,6 @@
             %input.input-sm.form-control.required#end-on{:type => 'text', :name => "end_on", :placeholder => t("datepicker.format"), :data => { :output => "booking-end-output" }}
             %input#booking-end-output{:type => 'hidden', :name => 'end_on'}
 
-        - blocked_dates_result.on_error do
-          = t("listings.listing_actions.unable_load_availability")
-
       - elsif listing_unit_type.present?
         - delivery_type = delivery_opts.length > 0 ? delivery_opts.first[:name].to_s : ""
         - shipping_price_additional = delivery_opts.length > 0 ? delivery_opts.first[:shipping_price_additional] : nil
@@ -148,7 +153,19 @@
 
       = render partial: "delivery_opts", locals: { delivery_opts: delivery_opts, is_author: is_author }
 
+      / .row.without-margin
+      /   .col-12
+      /     .checkbox-container
+      /       = check_box_tag 'discount-toggle'
+      /       %label
+      /         = t("conversations.new.i_have_a_discount").html_safe
+      / .row 
+      /   .col-12#discount-container
+      /     = text_field_tag :discount_code_input
+
+
       = hidden_field_tag(:listing_id, @listing.id)
+      = hidden_field_tag(:discount_code, 'mydisc201242')
 
       - blocked_dates_result.on_success do
         %button.enabled-book-button

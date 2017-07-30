@@ -666,6 +666,7 @@ en:
     new:
       message: Message
       message_to: "Message to %{author_name}"
+      i_have_a_discount: "I have a discount code"
       optional_message_to: "Optional message to %{author_name}"
       send_message: "Send message"
       send: Send
