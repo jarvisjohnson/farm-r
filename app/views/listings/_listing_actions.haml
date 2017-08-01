@@ -153,19 +153,19 @@
 
       = render partial: "delivery_opts", locals: { delivery_opts: delivery_opts, is_author: is_author }
 
-      / .row.without-margin
-      /   .col-12
-      /     .checkbox-container
-      /       = check_box_tag 'discount-toggle'
-      /       %label
-      /         = t("conversations.new.i_have_a_discount").html_safe
-      / .row 
-      /   .col-12#discount-container
-      /     = text_field_tag :discount_code_input
+      .row.without-margin
+        .col-12
+          .checkbox-container
+            = check_box_tag 'discount-toggle'
+            %label
+              = t("conversations.new.i_have_a_discount").html_safe
+      .row 
+        .col-12#discount-container
+          = text_field_tag :discount_code_input
 
 
       = hidden_field_tag(:listing_id, @listing.id)
-      = hidden_field_tag(:discount_code, 'mydisc201242')
+      = hidden_field_tag(:discount_code)
 
       - blocked_dates_result.on_success do
         %button.enabled-book-button

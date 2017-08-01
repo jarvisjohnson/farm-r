@@ -275,6 +275,14 @@ class PreauthorizeTransactionsController < ApplicationController
       discount = DiscountCode.find_by(code: tx_params[:discount_code])
       # See if the discount is active and hasn't been used
       use_discount = !discount.nil? && discount.active? && !discount.used?
+      discount_expired = !discount.nil? && (!discount.active? or discount.used?)
+
+      if use_discount
+        flash.now[:notice] = "Discount has been applied to your cart"
+      elsif discount_expired 
+        flash.now[:error] = "This discount has been used or is inactive"
+      else
+      end
 
       quantity = calculate_quantity(tx_params: tx_params, is_booking: is_booking, unit: listing.unit_type)
 
@@ -346,7 +354,7 @@ class PreauthorizeTransactionsController < ApplicationController
                  localized_unit_type: translate_unit_from_listing(listing_entity),
                  localized_selector_label: translate_selector_label_from_listing(listing_entity),
                  subtotal: subtotal_to_show(order_total, discount_total),
-                 discount: discount_total.total,
+                 discount: discount_total.total.zero? ? nil : discount_total.total,
                  vat: vat_to_show(tx_params[:vat], vat_total),
                  shipping_price: shipping_price_to_show(tx_params[:delivery], shipping_total),
                  total: order_total.total,

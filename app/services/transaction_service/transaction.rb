@@ -256,6 +256,7 @@ module TransactionService::Transaction
         item_total: item_total,
         shipping_price: tx[:shipping_price],
         vat_price: tx[:vat_price],
+        discount_total: tx[:discount_total],
         listing_author_id: tx[:listing_author_id],
         listing_quantity: tx[:listing_quantity],
         automatic_confirmation_after_days: tx[:automatic_confirmation_after_days],

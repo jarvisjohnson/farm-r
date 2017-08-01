@@ -24,4 +24,5 @@
     %label
       / Needs translation
       %span Post Code
-    %input#cardPostalCode{:autocomplete => "on", "data-stripe" => "address_zip", :pattern => "\\d*", :type => "text", :class => "card-postal-code stripe"}                 
+    %input#cardPostalCode{:autocomplete => "on", "data-stripe" => "address_zip", :pattern => "\\d*", :type => "text", :class => "card-postal-code stripe"}
+.row.payment-errors{style: "color: red"}

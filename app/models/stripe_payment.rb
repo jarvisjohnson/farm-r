@@ -15,6 +15,7 @@
 #  currency              :string(255)
 #  stripe_transaction_id :string(255)
 #  vat_price_cents       :integer
+#  discount_total_cents  :integer
 #
 # Indexes
 #
@@ -30,6 +31,8 @@ class StripePayment < ApplicationRecord
   belongs_to :recipient, foreign_key: :recipient_id, class_name: 'Person'
 
   monetize :sum_cents, allow_nil: true, with_model_currency: :currency
+  monetize :vat_price_cents, allow_nil: true, with_model_currency: :currency
+  monetize :discount_total_cents, allow_nil: true, with_model_currency: :currency
 
   delegate :commission_from_seller, to: :community
 

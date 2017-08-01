@@ -10,20 +10,21 @@ module TransactionService::Gateway
 
       vat_price = tx[:vat_price] || Money.new(0, tx[:unit_price].currency)
 
-      discount = tx[:discount]
-      @discount = DiscountCode.find_by(code: tx[:discount])
+      discount_total = tx[:discount_total] || Money.new(0, tx[:unit_price].currency)
 
       payment = StripePayment.create({
         transaction_id: tx[:id],
         community_id: tx[:community_id],
         status: :pending,
         payer_id: tx[:starter_id],
+        vat_price_cents: vat_price.cents,
+        discount_total_cents: discount_total.cents,
         recipient_id: tx[:listing_author_id],
         currency: tx[:unit_price].currency.iso_code,
-        sum_cents: ((tx[:unit_price] * tx[:listing_quantity]) + shipping_price + vat_price).cents
+        sum_cents: ((tx[:unit_price] * tx[:listing_quantity]) + shipping_price - discount_total + vat_price).cents
       })
 
-      result, error = StripeSaleService.new(payment, gateway_fields, discount).pay(false)
+      result, error = StripeSaleService.new(payment, gateway_fields).pay(false)
       
       if result.present? && !(result.is_a? String) && result.status == "succeeded"
         SyncCompletion.new(Result::Success.new({result: true}))
@@ -57,10 +58,9 @@ module TransactionService::Gateway
     end
 
     def get_payment_details(tx:)
-      # raise
       shipping_price = tx[:shipping_price] || Money.new(0, tx[:unit_price].currency)
       vat_price = tx[:vat_price] || Money.new(0, tx[:unit_price].currency)
-      total_price = (tx[:unit_price]) * tx[:listing_quantity] + shipping_price + vat_price
+      total_price = (tx[:unit_price]) * tx[:listing_quantity] + shipping_price - tx[:discount_total] + vat_price
       { payment_total: total_price,
         total_price: total_price,
         charged_commission: nil,

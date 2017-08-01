@@ -15,6 +15,7 @@
 #  currency              :string(255)
 #  stripe_transaction_id :string(255)
 #  vat_price_cents       :integer
+#  discount_total_cents  :integer
 #
 # Indexes
 #

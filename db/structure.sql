@@ -1243,6 +1243,7 @@ CREATE TABLE `stripe_payments` (
   `currency` varchar(255) DEFAULT NULL,
   `stripe_transaction_id` varchar(255) DEFAULT NULL,
   `vat_price_cents` int(11) DEFAULT NULL,
+  `discount_total_cents` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_stripe_payments_on_community_id` (`community_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
