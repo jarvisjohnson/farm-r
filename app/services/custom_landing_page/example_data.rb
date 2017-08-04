@@ -215,15 +215,15 @@ module CustomLandingPage
         "category_color_hover": {"type": "marketplace_data", "id": "primary_color"},
         "categories": [
             {
-                "category": { "type": "category", "id": 99999 },
+                "category": { "type": "category", "id": 243264 },
                 "background_image": {"type": "assets", "id": "default_hero_background"}
             },
             {
-                "category": { "type": "category", "id": 99999 },
+                "category": { "type": "category", "id": 243280 },
                 "background_image": {"type": "assets", "id": "default_hero_background"}
             },
             {
-                "category": { "type": "category", "id": 99999 },
+                "category": { "type": "category", "id": 243448 },
                 "background_image": {"type": "assets", "id": "default_hero_background"}
             }
         ]
@@ -243,13 +243,13 @@ module CustomLandingPage
         "author_name_color_hover": {"type": "marketplace_data", "id": "primary_color"},
         "listings": [
             {
-                "listing": { "type": "listing", "id": 99999 }
+                "listing": { "type": "listing", "id": 301777 }
             },
             {
-                "listing": { "type": "listing", "id": 99999 }
+                "listing": { "type": "listing", "id": 350907 }
             },
             {
-                "listing": { "type": "listing", "id": 99999 }
+                "listing": { "type": "listing", "id": 374309 }
             }
         ]
     },
@@ -289,8 +289,10 @@ module CustomLandingPage
     { "section": {"type": "sections", "id": "single_info_with_cta"}},
     { "section": {"type": "sections", "id": "single_info_with_background_and_cta"}},
     { "section": {"type": "sections", "id": "single_info_with_background_color_and_cta"}},
+    { "section": {"type": "sections", "id": "categories"}},
     { "section": {"type": "sections", "id": "two_column_info_with_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "two_column_info_without_icons_and_buttons"}},
+    { "section": {"type": "sections", "id": "listings"}},
     { "section": {"type": "sections", "id": "three_column_info_with_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "three_column_info_without_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "video"}},

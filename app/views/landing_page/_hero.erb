@@ -54,7 +54,8 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
                   </g>
                 </svg>
               </button>
-              <% if search_mode == "keyword_and_location_search" %>
+              <% # if search_mode == "keyword_and_location_search" %>
+              <% if false %>
                 <input type="search" name="q" class="hero__keyword-search-input--combined" placeholder="<%= s["search_placeholder"]["value"] %>"/>
                 <input type="search" name="lq" class="hero__location-search-input--combined" placeholder="<%= s.dig("search_location_with_keyword_placeholder", "value") %>"/>
               <% else %>
