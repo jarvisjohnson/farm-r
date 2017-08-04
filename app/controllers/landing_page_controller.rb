@@ -380,15 +380,15 @@ class LandingPageController < ActionController::Metal
   end
 
   def landing_page_styles
-    Rails.application.assets.find_asset("landing_page/styles.scss").to_s.html_safe
+    CompassRails.sprockets.find_asset("landing_page/styles.scss").to_s.html_safe
   end
 
   def location_search_js
-    Rails.application.assets.find_asset("location_search.js").to_s.html_safe
+    CompassRails.sprockets.find_asset("location_search.js").to_s.html_safe
   end
 
   def js_translations(topbar_locale)
-    Rails.application.assets.find_asset("i18n/#{topbar_locale}.js").to_s.html_safe
+    CompassRails.sprockets.find_asset("i18n/#{topbar_locale}.js").to_s.html_safe
   end
 
   def locale

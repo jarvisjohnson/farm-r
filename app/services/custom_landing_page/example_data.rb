@@ -254,6 +254,31 @@ module CustomLandingPage
         ]
     },
     {
+        "id": "listings-two",
+        "kind": "listings",
+        "title": "Featured listings section",
+        "paragraph": "PLEASE NOTE: This section is NOT ENABLED by default. To enable this section, replace listing IDs with real IDs and add the section to the 'composition'. This section contains 3 featured listings",
+        "button_color": {"type": "marketplace_data", "id": "primary_color"},
+        "button_color_hover": {"type": "marketplace_data", "id": "primary_color_darken"},
+        "button_title": "Browse all listings",
+        "button_path": {"type": "path", "id": "search"},
+        "price_color": {"type": "marketplace_data", "id": "primary_color"},
+        "no_listing_image_background_color": {"type": "marketplace_data", "id": "primary_color"},
+        "no_listing_image_text": {"type": "translation", "id": "no_listing_image"},
+        "author_name_color_hover": {"type": "marketplace_data", "id": "primary_color"},
+        "listings": [
+            {
+                "listing": { "type": "listing", "id": 301777 }
+            },
+            {
+                "listing": { "type": "listing", "id": 350907 }
+            },
+            {
+                "listing": { "type": "listing", "id": 374309 }
+            }
+        ]
+    },
+    {
       "id": "footer",
       "kind": "footer",
       "theme": "dark",
@@ -293,6 +318,7 @@ module CustomLandingPage
     { "section": {"type": "sections", "id": "two_column_info_with_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "two_column_info_without_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "listings"}},
+    { "section": {"type": "sections", "id": "listings-two"}},
     { "section": {"type": "sections", "id": "three_column_info_with_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "three_column_info_without_icons_and_buttons"}},
     { "section": {"type": "sections", "id": "video"}},
