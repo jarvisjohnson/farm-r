@@ -102,7 +102,7 @@ class PersonMailer < ActionMailer::Base
       @recipient = recipient
 
       if community.payments_in_use?
-        @payment_settings_link = paypal_account_settings_payment_url(recipient, @url_params.merge(locale: recipient.locale))
+        @payment_settings_link = stripe_account_settings_payment_url(recipient, @url_params.merge(locale: recipient.locale))
       end
 
       premailer_mail(:to => recipient.confirmed_notification_emails_to,

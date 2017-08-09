@@ -122,8 +122,12 @@ task :stop_jobs => :environment do
   command "cd #{fetch(:deploy_to)}/current ; RAILS_ENV=production bin/delayed_job start"  
 end
 
-task :logs => :environment do
+task :logs do
   command "tail -f #{fetch(:deploy_to)}/shared/log/*"  
+end
+
+task :restart do
+  command "sudo service #{fetch(:user)} restart"
 end
 
 # For help in making your deploy script, see the Mina documentation:
