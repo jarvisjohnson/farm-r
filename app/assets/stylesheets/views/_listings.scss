@@ -211,6 +211,11 @@ $listing-author-avatar-height: 108;
   align-items: center;
 }
 
+// Discount Code
+#discount-container {
+  display: none;
+}
+
 // Transaction action button
 .enabled-book-button {
   @include big-button($link);

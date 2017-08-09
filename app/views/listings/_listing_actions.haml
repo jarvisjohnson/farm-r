@@ -1,7 +1,10 @@
 - is_author = current_user?(@listing.author)
 - is_marketplace_admin = Maybe(@current_user).has_admin_rights?.or_else(false)
 - is_authorized = is_author || is_marketplace_admin
-- show_manage_availability = is_authorized && availability_enabled
+/ Remove availability for now
+/ # - show_manage_availability = is_authorized && availability_enabled
+- show_manage_availability = false
+
 
 - if @listing.closed?
   .listing-view-admin-links
@@ -38,7 +41,7 @@
 
             $("#discount-toggle").change(function(){
               $("#discount-container").toggle(this.checked);
-            }).change(); //ensure visible state matches initially
+            }); //ensure visible state matches initially
 
             $("input[name='discount_code_input']").on('input', function(){
               $("input[name='discount_code']").val($(this).val());
@@ -130,6 +133,13 @@
         - shipping_price_additional = delivery_opts.length > 0 ? delivery_opts.first[:shipping_price_additional] : nil
         - content_for :extra_javascript do
           :javascript
+            $("#discount-toggle").change(function(){
+              $("#discount-container").toggle(this.checked);
+            });
+
+            $("input[name='discount_code_input']").on('input', function(){
+              $("input[name='discount_code']").val($(this).val());
+            });
             $("#booking-dates").validate({
               errorPlacement: function(error, element) {
                 if (element.is("#quantity")) {
@@ -157,7 +167,7 @@
         .col-12
           .checkbox-container
             = check_box_tag 'discount-toggle'
-            %label
+            %label{for: 'discount-toggle'}
               = t("conversations.new.i_have_a_discount").html_safe
       .row 
         .col-12#discount-container
