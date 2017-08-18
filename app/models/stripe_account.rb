@@ -5,7 +5,7 @@
 #  id                    :integer          not null, primary key
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
-#  person_id             :string(22)
+#  person_id             :integer
 #  publishable_key       :string(255)
 #  secret_key            :string(255)
 #  stripe_user_id        :string(255)

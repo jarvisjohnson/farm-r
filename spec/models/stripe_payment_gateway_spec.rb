@@ -5,7 +5,7 @@
 #  id                     :integer          not null, primary key
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  community_id           :string(22)
+#  community_id           :integer
 #  stripe_publishable_key :string(255)
 #  stripe_secret_key      :string(255)
 #  stripe_client_id       :string(255)

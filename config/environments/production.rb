@@ -106,6 +106,9 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = mail_delivery_method
 
+  # Images in emails
+  config.action_mailer.asset_host = APP_CONFIG.email_asset_host
+
   if mail_delivery_method == :smtp
     ActionMailer::Base.smtp_settings = {
       :address              => APP_CONFIG.smtp_email_address,

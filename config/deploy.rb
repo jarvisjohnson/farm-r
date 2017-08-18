@@ -130,6 +130,10 @@ task :restart do
   command "sudo service #{fetch(:user)} restart"
 end
 
+task :console => :environment do
+  command "cd #{fetch(:deploy_to)}/current ; RAILS_ENV=production rails console"
+end
+
 # For help in making your deploy script, see the Mina documentation:
 #
 #  - https://github.com/mina-deploy/mina/tree/master/docs
