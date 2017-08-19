@@ -7,8 +7,11 @@ window.ST = window.ST || {};
     var statusInput = document.querySelector(selectors.status);
     var coordinateInput = document.querySelector(selectors.coordinate);
     var boundingboxInput = document.querySelector(selectors.boundingbox);
-    var maxDistanceInput = document.querySelector(selectors.maxDistance);
+    var boundingboxInput = document.querySelector(selectors.boundingbox);
+    var categoryInput = document.querySelector(selectors.category);
     var form = document.querySelector(selectors.form);
+    var machineOnly = document.querySelector(selectors.machineOnly);
+    var withOperator = document.querySelector(selectors.withOperator);
     var autocomplete = new window.google.maps.places.Autocomplete(searchInput, { bounds: { north: -90, east: -180, south: 90, west: 180 } });
     var locationQueryMade = false;
     autocomplete.setTypes(['geocode']);
@@ -19,7 +22,18 @@ window.ST = window.ST || {};
       coordinateInput.value = null;
       boundingboxInput.value = null;
       maxDistanceInput.value = null;
+      categoryInput.value = null;
     }
+
+    machineOnly.addEventListener('click', function(e) {
+      console.log("__CLICKED__");
+      categoryInput.value = "machine-only";
+    });
+
+    withOperator.addEventListener('click', function(e) {
+      console.log("__CLICKED__");
+      categoryInput.value = "machine-and-operator";
+    });
 
     function toRadians(degrees) {
       return degrees * (Math.PI/180);

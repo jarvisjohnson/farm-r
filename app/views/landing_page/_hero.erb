@@ -54,8 +54,8 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
                   </g>
                 </svg>
               </button>
-              <% # if search_mode == "keyword_and_location_search" %>
-              <% if false %>
+              <% if search_mode == "keyword_and_location_search" %>
+              <% # if false %>
                 <input type="search" name="q" class="hero__keyword-search-input--combined" placeholder="<%= s["search_placeholder"]["value"] %>"/>
                 <input type="search" name="lq" class="hero__location-search-input--combined" placeholder="<%= s.dig("search_location_with_keyword_placeholder", "value") %>"/>
               <% else %>
@@ -63,11 +63,14 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
               <% end %>
             </div>
             <button type="submit" class="hero__search-button hero__search-button<%= combined_mode %>"><%= s["search_button"]["value"] %></button>
+            <a class="hero__search-button hero__search-button<%= combined_mode %>" id="machine-only"><%= "Machine Only" %></a>
+            <a class="hero__search-button hero__search-button<%= combined_mode %>" id="with-operator"><%= "Machine and Operator" %></a>
             <% if search_mode == "location_search" || search_mode == "keyword_and_location_search" %>
               <input type="hidden" name="ls" />
               <input type="hidden" name="lc" />
               <input type="hidden" name="boundingbox" />
               <input type="hidden" name="distance_max" />
+              <input type="hidden" name="category" />
 
               <% content_for :javascript do %>
                 <script>
@@ -77,7 +80,10 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
                    status: '#<%= section_id %>__search-form [name=ls]',
                    coordinate: '#<%= section_id %>__search-form [name=lc]',
                    boundingbox: '#<%= section_id %>__search-form [name=boundingbox]',
-                   maxDistance: '#<%= section_id %>__search-form [name=distance_max]'
+                   maxDistance: '#<%= section_id %>__search-form [name=distance_max]',
+                   category: '#<%= section_id %>__search-form [name=category]',
+                   machineOnly: '#machine-only',
+                   withOperator: '#with-operator'
                  })
                 </script>
               <% end %>
