@@ -160,19 +160,19 @@ module CustomLandingPage
       "columns": [
         {
           "title": "List your unused machinery",
-          "icon": "quill",
+          "icon": {"type": "assets", "id": "icon-tractor"},
           "button_title": "List now",
           "button_path": {"type": "path", "id": "post_a_new_listing"}
         },
         {
           "title": "Browse & rent something awesome",
-          "icon": "piggy-bank",
+          "icon": {"type": "assets", "id": "icon-drone"},
           "button_title": "Browse listings",
           "button_path": {"type": "path", "id": "all_categories"}
         },
         {
           "title": "Farm more profitably",
-          "icon": "globe-1",
+          "icon": {"type": "assets", "id": "icon-piggy"},
           "button_title": "About us",
           "button_path": {"type": "path", "id": "how_to_use"}
         }
@@ -241,8 +241,7 @@ module CustomLandingPage
     {
         "id": "listings",
         "kind": "listings",
-        "title": "Featured listings section",
-        "paragraph": "PLEASE NOTE: This section is NOT ENABLED by default. To enable this section, replace listing IDs with real IDs and add the section to the 'composition'. This section contains 3 featured listings",
+        "title": "Featured listings",
         "button_color": {"type": "marketplace_data", "id": "primary_color"},
         "button_color_hover": {"type": "marketplace_data", "id": "primary_color_darken"},
         "button_title": "Browse all listings",
@@ -260,31 +259,6 @@ module CustomLandingPage
             },
             {
                 "listing": { "type": "listing", "id": 288217 }
-            }
-        ]
-    },
-    {
-        "id": "listings-two",
-        "kind": "listings",
-        "title": "Featured listings section",
-        "paragraph": "PLEASE NOTE: This section is NOT ENABLED by default. To enable this section, replace listing IDs with real IDs and add the section to the 'composition'. This section contains 3 featured listings",
-        "button_color": {"type": "marketplace_data", "id": "primary_color"},
-        "button_color_hover": {"type": "marketplace_data", "id": "primary_color_darken"},
-        "button_title": "Browse all listings",
-        "button_path": {"type": "path", "id": "search"},
-        "price_color": {"type": "marketplace_data", "id": "primary_color"},
-        "no_listing_image_background_color": {"type": "marketplace_data", "id": "primary_color"},
-        "no_listing_image_text": {"type": "translation", "id": "no_listing_image"},
-        "author_name_color_hover": {"type": "marketplace_data", "id": "primary_color"},
-        "listings": [
-            {
-                "listing": { "type": "listing", "id": 301777 }
-            },
-            {
-                "listing": { "type": "listing", "id": 350907 }
-            },
-            {
-                "listing": { "type": "listing", "id": 374309 }
             }
         ]
     },
@@ -329,7 +303,10 @@ module CustomLandingPage
     { "id": "cat-livestock", "src": "cat-livestock.jpg", "content_type": "image/jpeg" },
     { "id": "cat-tools", "src": "cat-tools.jpg", "content_type": "image/jpeg" },
     { "id": "cat-trailer", "src": "cat-trailer.jpg", "content_type": "image/jpeg" },
-    { "id": "cat-drone", "src": "cat-drone.jpg", "content_type": "image/jpeg" }
+    { "id": "cat-drone", "src": "cat-drone.jpg", "content_type": "image/jpeg" },
+    { "id": "icon-drone", "src": "drone.png", "content_type": "image/png" },
+    { "id": "icon-piggy", "src": "piggy.png", "content_type": "image/png" },
+    { "id": "icon-tractor", "src": "tractor.png", "content_type": "image/png" }
   ]
 }
 
