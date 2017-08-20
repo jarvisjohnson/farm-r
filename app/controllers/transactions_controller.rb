@@ -434,7 +434,7 @@ class TransactionsController < ApplicationController
         subtotal: show_subtotal ? tx[:listing_price] * quantity - tx[:discount_total]: nil,
         total: Maybe(tx[:payment_total]).or_else(tx[:checkout_total]),
         shipping_price: tx[:shipping_price],
-        vat: tx[:vat_price].zero? ? nil : tx[:vat_price],
+        vat: (tx[:vat_price].nil? or tx[:vat_price].zero?) ? nil : tx[:vat_price],
         total_label: total_label,
         unit_type: tx[:unit_type]
       })
