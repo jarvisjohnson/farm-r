@@ -28,6 +28,8 @@ class HomepageController < ApplicationController
     else
       @view_type = SearchPageHelper.selected_view_type(params[:view], @current_community.default_browse_view, APP_DEFAULT_VIEW_TYPE, VIEW_TYPES)
       @big_cover_photo = !(@current_user || CustomLandingPage::LandingPageStore.enabled?(@current_community.id)) || params[:big_cover_photo]
+      # @big_cover_photo = !(@current_user) || params[:big_cover_photo]
+      # @big_cover_photo = true
 
       @categories = @current_community.categories.includes(:children)
       @main_categories = @categories.select { |c| c.parent_id == nil }

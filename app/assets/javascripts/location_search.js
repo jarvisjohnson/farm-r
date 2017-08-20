@@ -3,10 +3,10 @@ window.ST = window.ST || {};
 (function(module) {
 
   module.initializeLocationSearch = function initializeLocationSearch(selectors) {
+    console.log(document.querySelector(selectors.search));
     var searchInput = document.querySelector(selectors.search);
     var statusInput = document.querySelector(selectors.status);
     var coordinateInput = document.querySelector(selectors.coordinate);
-    var boundingboxInput = document.querySelector(selectors.boundingbox);
     var boundingboxInput = document.querySelector(selectors.boundingbox);
     var categoryInput = document.querySelector(selectors.category);
     var form = document.querySelector(selectors.form);

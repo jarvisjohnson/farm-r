@@ -37,23 +37,23 @@
       - else
         = render partial: "layouts/expiration_notice", locals: {contact_owner_link: new_user_feedback_path}
 
-    - content_for(:page_content) do
+    - content_for(:header_content) do
       %section.marketplace-lander
-        - if @big_cover_photo
-          .coverimage
-            %figure.marketplace-cover.fluidratio
-              .lander-content.marketplace-lander-content
-                = yield :title_header
-        - elsif !(is_homepage && FeatureFlagHelper.feature_enabled?(:topbar_v1))
-          .coverimage
-            %figure.marketplace-cover-small.fluidratio
-            .coverimage-fade{:class => yield(:coverfade_class)}
-              %figure.marketplace-cover-small-fade.fluidratio
-          .title-container
-            .title-header-wrapper
-              .marketplace-title-header
-                = yield :title_header
-
+        / - if @big_cover_photo
+        .coverimage
+          %figure.marketplace-cover.fluidratio
+            .lander-content.marketplace-lander-content
+              = yield :title_header
+        / - elsif !(is_homepage && FeatureFlagHelper.feature_enabled?(:topbar_v1))
+        /   .coverimage
+        /     %figure.marketplace-cover-small.fluidratio
+        /     .coverimage-fade{:class => yield(:coverfade_class)}
+        /       %figure.marketplace-cover-small-fade.fluidratio
+        /   .title-container
+        /     .title-header-wrapper
+        /       .marketplace-title-header
+        /         = yield :title_header
+    - content_for(:page_content) do
       %article.page-content{class: is_homepage && !@big_cover_photo ? 'no-cover-photo' : ''}
         .wrapper
           = render :partial => "layouts/notifications"
@@ -66,6 +66,7 @@
       pressing send from either search bar of filter list will send all the form fields
 
     - if is_homepage
+      = content_for(:header_content)
       %form{method: "get", id: "homepage-filters"}
         - # New top bar search params are in different form and they have to be retained here
         - search_params = ["q", "lc", "ls", "boundingbox", "distance_max"]
@@ -76,6 +77,7 @@
         = hidden_field_tag "view", @view_type
         = content_for(:page_content)
     - else
+      = content_for(:header_content)
       = content_for(:page_content)
 
     -# Most of the JavaScript should be for performance reasons at the end of the body

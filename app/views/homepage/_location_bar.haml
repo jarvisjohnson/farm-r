@@ -1,15 +1,29 @@
-- content_for :extra_javascript do
-  :javascript
-    window.ST.initializeLocationSearch({form: '#homepage-filters', search: '#q', status: '#ls', coordinate: '#lc', boundingbox: '#boundingbox', maxDistance: '#distance_max'});
+.hero__content
+  .hero__content-container
+    .hero__search-bar-padding
+      .hero__search-bar--combined
+        %a#machine-only.hero__search-button-top-left Machine Only
+        %a#with-operator.hero__search-button-top-right Machine &amp; Operator
+    .hero__search-bar-padding
+      - combined_mode = search_mode == 'keyword_and_location_search' ? '--combined' : ''
+      %form{:action => "/s", :class => "hero__search-bar#{combined_mode}", :id => "hero__hero__0__search-form", :method => "get"}
+        %div{:class => "hero__search-input-container#{combined_mode}"}
+          %button{:class => "hero__search-icon#{combined_mode}", :type => "submit"}
+            %svg.hero__search-icon-svg{:version => "1.1", :viewbox => "27 19 22 22", :xmlns => "http://www.w3.org/2000/svg", "xmlns:xlink" => "http://www.w3.org/1999/xlink"}
+              %g#icon_search{:fill => "none", "fill-rule" => "evenodd", :stroke => "none", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "1", :transform => "translate(38.000000, 30.000000) scale(-1, 1) translate(-38.000000, -30.000000) translate(28.000000, 20.000000)"}
+                %path#line{:d => "M14.6666667,14.6666667 L19.3254458,19.3254458", :stroke => "#525961", "stroke-width" => "2"}
+                %circle#Oval{:cx => "8", :cy => "8", :r => "8", :stroke => "#525961", "stroke-width" => "2"}
+          / - if search_mode == "keyword_and_location_search"
+          /  - # if false
+          %input.hero__keyword-search-input--combined{:name => "q", :placeholder => "Search....", :type => "search"}/
+          %input.hero__location-search-input--combined{:name => "lq", :placeholder => "Location", :type => "search"}/
+          / - else
+          /   %input.hero__search-input{:name => "q", :placeholder => "Search....", :type => "search"}/
+        %button{:class => "hero__search-button hero__search-button#{combined_mode}", :type => "submit"}= "Search"
+        / - if search_mode == "location_search" || search_mode == "keyword_and_location_search"
+        %input{:name => "ls", :type => "hidden"}/
+        %input{:name => "lc", :type => "hidden"}/
+        %input{:name => "boundingbox", :type => "hidden"}/
+        %input{:name => "distance_max", :type => "hidden"}/
+        %input{:name => "category", :type => "hidden"}/
 
-
-.search-form-input.search-form-text-field.location-search-wrapper
-  = text_field_tag "q", params[:q], :placeholder => (@community_customization && @community_customization.search_placeholder) || t("homepage.index.what_do_you_need")
-  = hidden_field_tag 'lc', params[:lc]
-  = hidden_field_tag 'ls', ''
-  = hidden_field_tag 'boundingbox', params[:boundingbox]
-  = hidden_field_tag 'distance_max', ''
-
-.search-form-input
-  %button.action-button#search-button{type: 'submit'}
-    = icon_tag("search", ["icon-part"])
