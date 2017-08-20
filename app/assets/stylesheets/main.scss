@@ -274,13 +274,13 @@ ul {
   }
 }
 
-.left-navi.admin-navi {
+// .left-navi.admin-navi {
 
-  @include media(tablet) {
-    display: block;
-    position: relative;
-  }
-}
+//   @include media(tablet) {
+//     display: block;
+//     position: relative;
+//   }
+// }
 
 .avatar {
   position: relative;
