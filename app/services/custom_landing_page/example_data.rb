@@ -274,7 +274,8 @@ module CustomLandingPage
         {"label": "How to use?", "href": {"type": "path", "id": "how_to_use"}},
         {"label": "Terms", "href": {"type": "path", "id": "terms"}},
         {"label": "Privary", "href": {"type": "path", "id": "privacy"}},
-        {"label": "Invite new members", "href": {"type": "path", "id": "new_invitation"}}
+        {"label": "Invite new members", "href": {"type": "path", "id": "new_invitation"}},
+        {"label": "Blog", "url": "https://medium.com/farm-r"}
       ],
       "social": [
         {"service": "facebook", "url": "https://www.facebook.com/teamfarmr/"},

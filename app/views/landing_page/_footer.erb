@@ -26,7 +26,11 @@
       <% if has_links %>
         <ul class="footer__link-list">
           <% s['links'].each do |link| %>
-            <li class="footer__link-list-item"><a class="footer__link" href="<%= link['href']['value'] %>"><%= link["label"] %></a></li>
+            <% if link['url'] %>
+              <li class="footer__link-list-item"><a class="footer__link" href="<%= link['url'] %>" target="_blank"><%= link["label"] %></a></li>
+            <% else %>
+              <li class="footer__link-list-item"><a class="footer__link" href="<%= link['href']['value'] %>"><%= link["label"] %></a></li>
+            <% end %>
           <% end %>
         </ul>
       <% end %>
