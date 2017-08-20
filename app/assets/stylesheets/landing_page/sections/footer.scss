@@ -237,3 +237,26 @@ $footer__social-media-margin: 18px;
   width: 21px;
   height: 21px;
 }
+
+.footer__copyrights--markdown {
+  p {
+    width: 100%;
+    text-align: center;
+    @media #{$desktop} {
+      width: 47%;
+      text-align: right;
+      display: inline-block;
+    }
+  }
+}
+
+@media #{$desktop} {
+  #mc_embed_signup{
+    width:52%;
+    display: inline-block;
+    text-align: right;
+  }
+  #mc_embed_signup form {
+    text-align: right !important;
+  }
+}
