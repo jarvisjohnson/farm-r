@@ -42,6 +42,12 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
       <% when "keyword_search", "location_search", "keyword_and_location_search" %>
 
         <div class="hero__search-bar-padding">
+          <div class="hero__search-bar--combined">
+            <a class="hero__search-button-top-left" id="machine-only"><%= "Machine Only" %></a>
+            <a class="hero__search-button-top-right" id="with-operator"><%= "Machine & Operator" %></a>
+          </div>
+        </div>
+        <div class="hero__search-bar-padding">
           <% combined_mode = search_mode == 'keyword_and_location_search' ? '--combined' : '' %>
           <form method="get" id="<%= section_id %>__search-form" class="hero__search-bar<%= combined_mode %>" action="<%= s["search_path"]["value"] %>">
             <div class="hero__search-input-container<%= combined_mode %>">
@@ -63,8 +69,6 @@ section_style_class = hero_style_variations[s["background_image_variation"]]
               <% end %>
             </div>
             <button type="submit" class="hero__search-button hero__search-button<%= combined_mode %>"><%= s["search_button"]["value"] %></button>
-            <a class="hero__search-button hero__search-button<%= combined_mode %>" id="machine-only"><%= "Machine Only" %></a>
-            <a class="hero__search-button hero__search-button<%= combined_mode %>" id="with-operator"><%= "Machine and Operator" %></a>
             <% if search_mode == "location_search" || search_mode == "keyword_and_location_search" %>
               <input type="hidden" name="ls" />
               <input type="hidden" name="lc" />

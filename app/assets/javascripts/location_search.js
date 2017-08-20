@@ -28,11 +28,23 @@ window.ST = window.ST || {};
     machineOnly.addEventListener('click', function(e) {
       console.log("__CLICKED__");
       categoryInput.value = "machine-only";
+      if (this.classList.contains('selected')) {
+       this.classList.remove('selected');
+      } else {
+        this.classList.add('selected');
+        withOperator.classList.remove('selected');
+      }
     });
 
     withOperator.addEventListener('click', function(e) {
       console.log("__CLICKED__");
       categoryInput.value = "machine-and-operator";
+      if (this.classList.contains('selected')) {
+       this.classList.remove('selected');
+      } else {
+        this.classList.add('selected');
+        machineOnly.classList.remove('selected');
+      }
     });
 
     function toRadians(degrees) {
