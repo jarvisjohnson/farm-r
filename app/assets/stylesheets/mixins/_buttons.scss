@@ -12,6 +12,7 @@ You may want to override following properties:
 */
 @mixin landing-page__button {
   $button-border-size: 2px;
+  color: #525961!important;
 
   @include typography__semibold;
   font-size: 16px;
@@ -23,10 +24,10 @@ You may want to override following properties:
 
   border-width: $button-border-size;
   border-style: solid;
-  border-color: transparent;
+  border-color: #525961;
 
   &:hover {
     @include hover-transition;
-    color: #FFF;
+    color: #525961;
   }
 }

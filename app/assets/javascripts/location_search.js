@@ -23,7 +23,6 @@ window.ST = window.ST || {};
       coordinateInput.value = null;
       boundingboxInput.value = null;
       maxDistanceInput.value = null;
-      categoryInput.value = null;
     }
 
     machineOnly.addEventListener('click', function(e) {

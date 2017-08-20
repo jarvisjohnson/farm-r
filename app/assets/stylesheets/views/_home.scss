@@ -6,11 +6,11 @@
 
 .home-toolbar {
   @include pie-clearfix;
-  margin-bottom: lines(0.5);
+  margin-bottom: lines(1.5);
   border-bottom: 1px solid $border;
 
   @include media(tablet) {
-    margin-bottom: lines(1);
+    margin-bottom: lines(2.5);
   }
 }
 
@@ -20,7 +20,7 @@
 
 .home-toolbar-button-group {
   @include button-group;
-  margin-bottom: lines(0.5);
+  margin-bottom: lines(1.5);
 
   // Leave room for filters button on the left side
   width: 100%;
