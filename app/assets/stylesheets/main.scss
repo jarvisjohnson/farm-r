@@ -1950,6 +1950,7 @@ figure.fluidratio {
     background-image: url(image-path($cover-photo-url));
     height: auto;
     background-size: cover;
+    box-shadow: inset 0 0 0 999999px rgba(0, 0, 0, 0.5);
   }
 
   figure.marketplace-cover-small {
@@ -1958,6 +1959,7 @@ figure.fluidratio {
     @include media(tablet) {
       @include fluid-ratio(em(1920) em($small-cover-photo-height), em(300) em($small-cover-photo-height));
     }
+    box-shadow: inset 0 0 0 999999px rgba(0, 0, 0, 0.5);
   }
 
   .coverimage-fade {

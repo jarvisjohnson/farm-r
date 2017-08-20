@@ -254,7 +254,8 @@ class Admin::CommunitiesController < Admin::AdminBaseController
         main_search_select_options: main_search_select_options,
         distance_unit: marketplace_configurations[:distance_unit],
         distance_unit_select_options: distance_unit_select_options,
-        limit_distance: marketplace_configurations[:limit_search_distance]
+        limit_distance: marketplace_configurations[:limit_search_distance],
+        search_radius: marketplace_configurations[:search_radius]
       }
     else
       render :settings, locals: {
@@ -344,7 +345,8 @@ class Admin::CommunitiesController < Admin::AdminBaseController
       :automatic_confirmation_after_days,
       :automatic_newsletters,
       :default_min_days_between_community_updates,
-      :email_admins_about_new_members
+      :email_admins_about_new_members,
+      :search_radius
     ]
     settings_params = params.require(:community).permit(*permitted_params)
 
@@ -356,7 +358,8 @@ class Admin::CommunitiesController < Admin::AdminBaseController
         configurations: {
           main_search: params[:main_search],
           distance_unit: params[:distance_unit],
-          limit_search_distance: params[:limit_distance].present?
+          limit_search_distance: params[:limit_distance].present?,
+          search_radius: params[:search_radius]
         }
       })
     end

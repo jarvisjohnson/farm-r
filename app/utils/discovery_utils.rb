@@ -10,7 +10,8 @@ module DiscoveryUtils
           :'search[distance_unit]' => original[:distance_unit],
           :'search[scale]' => original[:scale],
           :'search[offset]' => original[:offset],
-          :'filter[distance_max]' => original[:distance_max] }
+          :'filter[distance_max]' => original[:distance_max],
+          :'filter[search_radius]' => original[:search_radius] }
       else
         {}
       end

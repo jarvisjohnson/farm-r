@@ -749,6 +749,8 @@ CREATE TABLE `locations` (
   `person_id` varchar(255) DEFAULT NULL,
   `location_type` varchar(255) DEFAULT NULL,
   `community_id` int(11) DEFAULT NULL,
+  `latitude_radians` float DEFAULT NULL,
+  `longitude_radians` float DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_locations_on_person_id` (`person_id`),
   KEY `index_locations_on_listing_id` (`listing_id`),
@@ -767,6 +769,7 @@ CREATE TABLE `marketplace_configurations` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `limit_search_distance` tinyint(1) NOT NULL DEFAULT '1',
+  `search_radius` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index_marketplace_configurations_on_community_id` (`community_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2214,6 +2217,8 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20170729160244'),
 ('20170729163238'),
 ('20170729212703'),
-('20170730184448');
+('20170730184448'),
+('20170820161246'),
+('20170820163233');
 
 

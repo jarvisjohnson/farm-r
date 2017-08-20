@@ -12,8 +12,16 @@
   font-weight: bold;
 }
 
-.checkbox-container .settings-checkbox-label {
-  font-weight: 500;
+.checkbox-container{
+  input#search_radius {
+    width: 10%;
+  }  
+  .settings-checkbox-label, .settings-number-label {
+    font-weight: 500;
+  } 
+  .settings-number-label {
+    padding: 0 .5em 0 0;
+  } 
 }
 
 .sort-text-wrapper {

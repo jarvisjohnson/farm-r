@@ -2,8 +2,10 @@
   .hero__content-container
     .hero__search-bar-padding
       .hero__search-bar--combined
-        %a#machine-only.hero__search-button-top-left Machine Only
-        %a#with-operator.hero__search-button-top-right Machine &amp; Operator
+        %a#machine-only.hero__search-button-top-left{ class: params[:category] == "machine-only" ? "selected" : "" }
+          Machine Only
+        %a#with-operator.hero__search-button-top-right{ class: params[:category] == "machine-and-operator" ? "selected" : "" }
+          Machine &amp; Operator
     .hero__search-bar-padding
       - combined_mode = search_mode == 'keyword_and_location_search' ? '--combined' : ''
       %form{:action => "/s", :class => "hero__search-bar#{combined_mode}", :id => "hero__hero__0__search-form", :method => "get"}
@@ -15,8 +17,8 @@
                 %circle#Oval{:cx => "8", :cy => "8", :r => "8", :stroke => "#525961", "stroke-width" => "2"}
           / - if search_mode == "keyword_and_location_search"
           /  - # if false
-          %input.hero__keyword-search-input--combined{:name => "q", :placeholder => "Search....", :type => "search"}/
-          %input.hero__location-search-input--combined{:name => "lq", :placeholder => "Location", :type => "search"}/
+          %input.hero__keyword-search-input--combined{:name => "q", :placeholder => "Search....", :type => "search", :value => params[:q] ? params[:q] : "" }/
+          %input.hero__location-search-input--combined{:name => "lq", :placeholder => "Location", :type => "search", :value => params[:lq] ? params[:lq] : "" }/
           / - else
           /   %input.hero__search-input{:name => "q", :placeholder => "Search....", :type => "search"}/
         %button{:class => "hero__search-button hero__search-button#{combined_mode}", :type => "submit"}= "Search"
@@ -26,4 +28,5 @@
         %input{:name => "boundingbox", :type => "hidden"}/
         %input{:name => "distance_max", :type => "hidden"}/
         %input{:name => "category", :type => "hidden"}/
+        %input{:name => "search_radius", :type => "hidden"}/
 

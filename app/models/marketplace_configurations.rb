@@ -10,6 +10,7 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  limit_search_distance :boolean          default(TRUE), not null
+#  search_radius         :integer
 #
 # Indexes
 #

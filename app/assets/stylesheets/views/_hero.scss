@@ -268,7 +268,7 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
   border: 0;
   padding: 0;
   border-radius: 0px 29.5px 29.5px 0px;
-
+  margin: 0;
   padding: 14px 32px 14px 28px;
 
   line-height: 32px;
@@ -330,6 +330,7 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
 
   &:hover {
     @include hover-transition;
+    color: #aaaaaa !important;
   }
 
   /* mobile */
@@ -415,6 +416,10 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
     outline: none;
   }
 
+  &:hover {
+    background: #FFFFFF!important;
+  }
+
   @media #{$tablet} {
     order: 0;
     padding: 19px 0px;
@@ -428,6 +433,7 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
 
 .hero__search-icon {
   @extend .hero__search-icon--base;
+  margin: 0;
 
   @media #{$mobile-landscape} {
     order: 0;

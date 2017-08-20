@@ -52,6 +52,8 @@ class HomepageController < ApplicationController
 
     compact_filter_params = HashUtils.compact(filter_params)
 
+    marketplace_configuration = MarketplaceService::API::Api.configurations.get(community_id: @current_community.id).data
+
     per_page = @view_type == "map" ? APP_CONFIG.map_listings_limit : APP_CONFIG.grid_listings_limit
 
     includes =
@@ -70,6 +72,7 @@ class HomepageController < ApplicationController
     enabled_search_modes = search_modes_in_use(params[:q], params[:lc], main_search)
     keyword_in_use = enabled_search_modes[:keyword]
     location_in_use = enabled_search_modes[:location]
+    search_radius = marketplace_configuration ? marketplace_configuration[:search_radius] : 100
 
     current_page = Maybe(params)[:page].to_i.map { |n| n > 0 ? n : 1 }.or_else(1)
     relevant_search_fields = parse_relevant_search_fields(params, relevant_filters)
@@ -81,7 +84,8 @@ class HomepageController < ApplicationController
                                   includes: includes.to_set,
                                   location_search_in_use: location_in_use,
                                   keyword_search_in_use: keyword_in_use,
-                                  relevant_search_fields: relevant_search_fields)
+                                  relevant_search_fields: relevant_search_fields,
+                                  search_radius: search_radius)
 
     if @view_type == 'map'
       viewport = viewport_geometry(params[:boundingbox], params[:lc], @current_community.location)
@@ -153,7 +157,7 @@ class HomepageController < ApplicationController
     SearchPageHelper.remove_irrelevant_search_fields(search_fields, relevant_filters)
   end
 
-  def find_listings(params:, current_page:, listings_per_page:, filter_params:, includes:, location_search_in_use:, keyword_search_in_use:, relevant_search_fields:)
+  def find_listings(params:, current_page:, listings_per_page:, filter_params:, includes:, location_search_in_use:, keyword_search_in_use:, relevant_search_fields:, search_radius:)
 
     search = {
       # Add listing_id
@@ -168,7 +172,8 @@ class HomepageController < ApplicationController
       price_max: params[:price_max],
       locale: I18n.locale,
       include_closed: false,
-      sort: nil
+      sort: nil,
+      search_radius: search_radius
     }
 
     if @view_type != 'map' && location_search_in_use
@@ -213,6 +218,7 @@ class HomepageController < ApplicationController
     distance_system = marketplace_configuration ? marketplace_configuration[:distance_unit] : nil
     distance_unit = distance_system == :metric ? :km : :miles
     limit_search_distance = marketplace_configuration ? marketplace_configuration[:limit_search_distance] : true
+    search_radius = marketplace_configuration ? marketplace_configuration[:search_radius] : 100
     distance_limit = [distance, APP_CONFIG[:external_search_distance_limit_min].to_f].max if limit_search_distance
 
     corners = params[:boundingbox].split(',') if params[:boundingbox].present?

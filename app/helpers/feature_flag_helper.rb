@@ -68,6 +68,7 @@ module FeatureFlagHelper
   end
 
   def location_search_available
-    search_engine == :zappy
+    # Allow sphinx to search via location (enabling location search without it's actual functionality yet)
+    search_engine == :sphinx
   end
 end

@@ -8,6 +8,7 @@ window.ST = window.ST || {};
     var statusInput = document.querySelector(selectors.status);
     var coordinateInput = document.querySelector(selectors.coordinate);
     var boundingboxInput = document.querySelector(selectors.boundingbox);
+    var maxDistanceInput = document.querySelector(selectors.maxDistance);
     var categoryInput = document.querySelector(selectors.category);
     var form = document.querySelector(selectors.form);
     var machineOnly = document.querySelector(selectors.machineOnly);

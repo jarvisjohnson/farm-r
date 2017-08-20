@@ -2,17 +2,19 @@
 #
 # Table name: locations
 #
-#  id             :integer          not null, primary key
-#  latitude       :float(24)
-#  longitude      :float(24)
-#  address        :string(255)
-#  google_address :string(255)
-#  created_at     :datetime
-#  updated_at     :datetime
-#  listing_id     :integer
-#  person_id      :string(255)
-#  location_type  :string(255)
-#  community_id   :integer
+#  id                :integer          not null, primary key
+#  latitude          :float(24)
+#  longitude         :float(24)
+#  address           :string(255)
+#  google_address    :string(255)
+#  created_at        :datetime
+#  updated_at        :datetime
+#  listing_id        :integer
+#  person_id         :string(255)
+#  location_type     :string(255)
+#  community_id      :integer
+#  latitude_radians  :float(24)
+#  longitude_radians :float(24)
 #
 # Indexes
 #
@@ -26,6 +28,8 @@ class Location < ApplicationRecord
   belongs_to :person
   belongs_to :listing
   belongs_to :community
+
+  after_save :set_radians
 
   def search_and_fill_latlng(address=nil, locale=APP_CONFIG.default_locale)
     okresponse = false
@@ -47,6 +51,11 @@ class Location < ApplicationRecord
       end
     end
     okresponse
+  end
+
+  def set_radians
+    self.update_column(:latitude_radians, (self.latitude * Math::PI)/180.0)
+    self.update_column(:longitude_radians, (self.longitude * Math::PI)/180.0)
   end
 
 end

@@ -209,6 +209,7 @@ en:
         km: km
         miles: miles
         show_only_nearby: "Show only nearby listings with location search"
+        search_radius: "Radius to display location search results:"
         listing_preferences: "Listing preferences"
         transaction_preferences: "Order preferences"
         show_listing_publishing_date: "Display publishing date of the listing on the listing page"

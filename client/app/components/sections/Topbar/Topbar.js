@@ -240,28 +240,28 @@ class Topbar extends Component {
       hasMenuProps ? r(MenuMobile, { ...mobileMenuProps, className: css.topbarMobileMenu }) : null,
       r(Logo, { ...this.props.logo, className: classNames(css.topbarLogo, textLogo), color: marketplaceColor1 }),
       div({ className: css.topbarMediumSpacer }),
-      this.props.search ?
-        r(SearchBar, {
-          mode: this.props.search.mode,
-          keywordPlaceholder: searchPlaceholder || t('web.topbar.search_placeholder'),
-          locationPlaceholder: searchPlaceholder == null || this.props.search.mode === 'keyword_and_location' ? t('web.topbar.search_location_placeholder') : searchPlaceholder,
-          keywordQuery: oldSearchParams.q,
-          locationQuery: oldSearchParams.lq,
-          customColor: marketplaceColor1,
-          onSubmit: ({ keywordQuery, locationQuery, place, errorStatus }) => {
-            const query = createQuery({
-              q: keywordQuery,
-              lq: locationQuery,
-              lc: placesUtils.coordinates(place),
-              boundingbox: placesUtils.viewport(place),
-              distance_max: placesUtils.maxDistance(place),
-              ls: errorStatus,
-            }, location);
-            const searchUrl = `${this.props.search_path}${query}`;
-            window.location.assign(searchUrl);
-          },
-        }) :
-        div({ className: css.topbarMobileSearchPlaceholder }),
+      // this.props.search ?
+      //   r(SearchBar, {
+      //     mode: this.props.search.mode,
+      //     keywordPlaceholder: searchPlaceholder || t('web.topbar.search_placeholder'),
+      //     locationPlaceholder: searchPlaceholder == null || this.props.search.mode === 'keyword_and_location' ? t('web.topbar.search_location_placeholder') : searchPlaceholder,
+      //     keywordQuery: oldSearchParams.q,
+      //     locationQuery: oldSearchParams.lq,
+      //     customColor: marketplaceColor1,
+      //     onSubmit: ({ keywordQuery, locationQuery, place, errorStatus }) => {
+      //       const query = createQuery({
+      //         q: keywordQuery,
+      //         lq: locationQuery,
+      //         lc: placesUtils.coordinates(place),
+      //         boundingbox: placesUtils.viewport(place),
+      //         distance_max: placesUtils.maxDistance(place),
+      //         ls: errorStatus,
+      //       }, location);
+      //       const searchUrl = `${this.props.search_path}${query}`;
+      //       window.location.assign(searchUrl);
+      //     },
+      //   }) :
+      div({ className: css.topbarMobileSearchPlaceholder }),
       div({ className: css.topbarMenuSpacer }, hasMenuProps ?
         r(MenuPriority, menuProps) :
         null),

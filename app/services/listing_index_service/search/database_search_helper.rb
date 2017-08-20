@@ -44,6 +44,7 @@ module ListingIndexService::Search::DatabaseSearchHelper
       :latitude,
       :longitude,
       :distance_max,
+      :search_radius,
       :sort,
       :listing_shape_id,
       :categories,
