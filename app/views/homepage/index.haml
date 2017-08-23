@@ -156,11 +156,11 @@
           - if @view_type.eql?("grid")
             %div{class: @category_menu_enabled ? "home-fluid-thumbnail-grid-narrow" : "home-fluid-thumbnail-grid-wide"}
               .home-fluid-thumbnail-grid
-                = render partial: "grid_item", collection: @listings, as: :listing, locals: { show_distance: location_search_in_use }
+                = render partial: "grid_item", collection: @listings, as: :listing, locals: { show_distance: location_search_in_use, distance_unit: true_distance_unit }
           - else
             .home-listings
               - if (location_search_in_use)
-                = render partial: "list_item_with_distance", collection: @listings, as: :listing, locals: { shape_name_map: shape_name_map, show_distance: location_search_in_use }
+                = render partial: "list_item_with_distance", collection: @listings, as: :listing, locals: { shape_name_map: shape_name_map, show_distance: location_search_in_use, distance_unit: true_distance_unit }
               - else
                 = render partial: "list_item", collection: @listings, as: :listing, locals: { shape_name_map: shape_name_map }
           .home-loading-more

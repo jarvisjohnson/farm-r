@@ -337,11 +337,11 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
   display: none;
 
   @media #{$mobile-landscape}, #{$tablet} {
-    display: block;
+    // display: block;
   }
 
   @media #{$desktop} {
-    display: block;
+    // display: block;
   }
 
   &:hover {

@@ -161,20 +161,20 @@ module CustomLandingPage
         {
           "title": "List your unused machinery",
           "icon": {"type": "assets", "id": "icon-tractor"},
-          "button_title": "List now",
-          "button_path": {"type": "path", "id": "post_a_new_listing"}
+          "//button_title": "List now",
+          "//button_path": {"type": "path", "id": "post_a_new_listing"}
         },
         {
           "title": "Browse & rent something awesome",
           "icon": {"type": "assets", "id": "icon-drone"},
-          "button_title": "Browse listings",
-          "button_path": {"type": "path", "id": "all_categories"}
+          "//button_title": "Browse listings",
+          "//button_path": {"type": "path", "id": "all_categories"}
         },
         {
           "title": "Farm more profitably",
           "icon": {"type": "assets", "id": "icon-piggy"},
-          "button_title": "About us",
-          "button_path": {"type": "path", "id": "how_to_use"}
+          "//button_title": "About us",
+          "//button_path": {"type": "path", "id": "how_to_use"}
         }
       ]
     },
@@ -209,11 +209,11 @@ module CustomLandingPage
         "category_color_hover": {"type": "marketplace_data", "id": "primary_color"},
         "categories": [
             {
-                "category": { "type": "category", "id": 261677 },
+                "category": { "type": "category", "id": 261952 },
                 "background_image": {"type": "assets", "id": "cat-heavy-machinery"}
             },
             {
-                "category": { "type": "category", "id": 261678 },
+                "category": { "type": "category", "id": 261953 },
                 "background_image": {"type": "assets", "id": "cat-implements"}
             },
             {
@@ -221,7 +221,7 @@ module CustomLandingPage
                 "background_image": {"type": "assets", "id": "cat-trailer"}
             },
             {
-                "category": { "type": "category", "id": 261948 },
+                "category": { "type": "category", "id": 261955 },
                 "background_image": {"type": "assets", "id": "cat-livestock"}
             },
             {
@@ -271,9 +271,9 @@ module CustomLandingPage
       "links": [
         {"label": "About", "href": {"type": "path", "id": "about"}},
         {"label": "Contact us", "href": {"type": "path", "id": "contact_us"}},
-        {"label": "How to use?", "href": {"type": "path", "id": "how_to_use"}},
+        {"label": "How it works", "href": {"type": "path", "id": "how_to_use"}},
         {"label": "Terms", "href": {"type": "path", "id": "terms"}},
-        {"label": "Privary", "href": {"type": "path", "id": "privacy"}},
+        {"label": "Privacy", "href": {"type": "path", "id": "privacy"}},
         {"label": "Invite new members", "href": {"type": "path", "id": "new_invitation"}},
         {"label": "Blog", "url": "https://medium.com/farm-r"}
       ],

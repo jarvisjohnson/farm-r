@@ -462,7 +462,7 @@ class ListingsController < ApplicationController
 
     shape = get_shape(params[:listing][:listing_shape_id])
 
-    if shape.present? && shape[:availability] == :booking
+    if FeatureFlagHelper.feature_enabled?(:availability) && shape.present? && shape[:availability] == :booking
       bookable_res = create_bookable(@current_community.uuid_object, @listing.uuid_object, @current_user.uuid_object)
       unless bookable_res.success
         flash[:error] = t("listings.error.update_failed_to_connect_to_booking_service")
@@ -510,7 +510,7 @@ class ListingsController < ApplicationController
 
   def finalise_update(listing, shape, community, update_successful, old_availability)
     if update_successful
-      listing.location.update_attributes(params[:location]) if listing.location
+      # listing.location.update_attributes(params[:location]) if listing.location
       flash[:notice] = update_flash(old_availability: old_availability, new_availability: shape[:availability])
       Delayed::Job.enqueue(ListingUpdatedJob.new(listing.id, community.id))
       reprocess_missing_image_styles(listing) if listing.closed?

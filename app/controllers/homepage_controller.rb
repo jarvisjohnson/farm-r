@@ -37,10 +37,10 @@ class HomepageController < ApplicationController
       # This assumes that we don't never ever have communities with only 1 main share type and
       # only 1 sub share type, as that would make the listing type menu visible and it would look bit silly
       # DISABLED FOR FARM_R on homepage
-      # listing_shape_menu_enabled = all_shapes.size > 1
-      # @show_categories = @categories.size > 1
-      listing_shape_menu_enabled = false
-      @show_categories = false
+      listing_shape_menu_enabled = all_shapes.size > 1
+      @show_categories = @categories.size > 1
+      # listing_shape_menu_enabled = false
+      # @show_categories = false
       show_price_filter = @current_community.show_price_filter && all_shapes.any? { |s| s[:price_enabled] }
 
       @show_custom_fields = relevant_filters.present? || show_price_filter
@@ -62,9 +62,9 @@ class HomepageController < ApplicationController
     includes =
       case @view_type
       when "grid"
-        [:author, :listing_images]
+        [:author, :listing_images, :location]
       when "list"
-        [:author, :listing_images, :num_of_reviews]
+        [:author, :listing_images, :num_of_reviews, :location]
       when "map"
         [:location]
       else
@@ -76,6 +76,8 @@ class HomepageController < ApplicationController
     keyword_in_use = enabled_search_modes[:keyword]
     location_in_use = enabled_search_modes[:location]
     search_radius = marketplace_configuration ? marketplace_configuration[:search_radius] : 100
+    distance_system = marketplace_configuration ? marketplace_configuration[:distance_unit] : nil
+    distance_unit = distance_system == :metric ? :km : :miles
 
     current_page = Maybe(params)[:page].to_i.map { |n| n > 0 ? n : 1 }.or_else(1)
     relevant_search_fields = parse_relevant_search_fields(params, relevant_filters)
@@ -129,6 +131,7 @@ class HomepageController < ApplicationController
         current_page: current_page,
         current_search_path_without_page: search_path(params.except(:page)),
         viewport: viewport,
+        true_distance_unit: distance_unit,
         search_params: CustomFieldSearchParams.remove_irrelevant_search_params(params, relevant_search_fields),
       }
 

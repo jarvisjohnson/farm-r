@@ -34,11 +34,11 @@
               %a.browsing-list-item-share-type-link{ href: search_path( transaction_type: shape_name_map[listing.listing_shape_id], view: :list)}
                 = icon_tag(listing.icon_name, ["icon-fix"])
                 = shape_name(listing)
-        - distance = Maybe(listing.distance).or_else(nil)
+        - distance = Maybe(listing.geodist).or_else(nil)
         - if(show_distance && distance.present?)
           .browsing-list-item-distance
-            - dist = format_distance(distance)
-            = t("homepage.list_item.distance_away", distance: dist, distance_unit: listing.distance_unit)
+            - dist = format_distance(distance, distance_unit)
+            = t("homepage.list_item.distance_away", distance: dist, distance_unit: distance_unit)
 
         .browsing-list-item-author{ class: (listing.listing_images.size > 0 ? "browsing-list-item-author-with-listing-image" : "browsing-list-item-author-without-listing-image")}
           .browsing-list-item-avatar

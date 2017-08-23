@@ -19,7 +19,9 @@ module HomepageHelper
     end
   end
 
-  def format_distance(distance)
+  def format_distance(distance, distance_unit)
+    divider = distance_unit == :miles ? 1609.34 : 1000 
+    distance = distance / divider
     precision = (distance < 1) ? 1 : 2
     (distance < 0.1) ? "< #{number_with_delimiter(0.1, locale: locale)}" : number_with_precision(distance, precision: precision, significant: true, locale: locale)
   end

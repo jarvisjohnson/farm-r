@@ -138,7 +138,7 @@ module ListingIndexService::Search
             max_query_time: 1000 # Timeout and fail after 1s
           )
 
-        end          
+        end
 
         begin
           DatabaseSearchHelper.success_result(models.total_entries, models, includes)

@@ -70,6 +70,7 @@ module ListingIndexService::DataTypes
     [:latitude],
     [:longitude],
     [:distance, :optional],
+    [:geodist, :optional],
     [:distance_unit, :optional],
     [:address, :string],
     [:comment_count, :fixnum, :optional],

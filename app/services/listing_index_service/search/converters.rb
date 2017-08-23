@@ -15,7 +15,8 @@ module ListingIndexService::Search::Converters
       unit_type: l.unit_type,
       quantity: l.quantity,
       shape_name_tr_key: l.shape_name_tr_key,
-      listing_shape_id: l.listing_shape_id
+      listing_shape_id: l.listing_shape_id,
+      geodist: l.respond_to?(:geodist) ? l.geodist : nil
     }.merge(meta)
       .merge(location_hash(l, includes))
       .merge(author_hash(l, includes))
