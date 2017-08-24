@@ -8,9 +8,9 @@
           Machine &amp; Operator
     .hero__search-bar-padding
       - combined_mode = search_mode == 'keyword_and_location_search' ? '--combined' : ''
-      %form{:action => "/s", :class => "hero__search-bar#{combined_mode}", :id => "hero__hero__0__search-form", :method => "get"}
-        %div{:class => "hero__search-input-container#{combined_mode}"}
-          %button{:class => "hero__search-icon#{combined_mode}", :type => "submit"}
+      %form{:action => "/s", :class => "hero__search-bar--combined", :id => "hero__hero__0__search-form", :method => "get"}
+        %div{:class => "hero__search-input-container--combined"}
+          %button{:class => "hero__search-icon--combined", :type => "submit"}
             %svg.hero__search-icon-svg{:version => "1.1", :viewbox => "27 19 22 22", :xmlns => "http://www.w3.org/2000/svg", "xmlns:xlink" => "http://www.w3.org/1999/xlink"}
               %g#icon_search{:fill => "none", "fill-rule" => "evenodd", :stroke => "none", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "1", :transform => "translate(38.000000, 30.000000) scale(-1, 1) translate(-38.000000, -30.000000) translate(28.000000, 20.000000)"}
                 %path#line{:d => "M14.6666667,14.6666667 L19.3254458,19.3254458", :stroke => "#525961", "stroke-width" => "2"}
@@ -21,7 +21,7 @@
           %input.hero__location-search-input--combined{:name => "lq", :placeholder => "Location", :type => "search", :value => params[:lq] ? params[:lq] : "" }/
           / - else
           /   %input.hero__search-input{:name => "q", :placeholder => "Search....", :type => "search"}/
-        %button{:class => "hero__search-button hero__search-button#{combined_mode}", :type => "submit"}= "Search"
+        %button{:class => "hero__search-button hero__search-button--combined", :type => "submit"}= "Search"
         / - if search_mode == "location_search" || search_mode == "keyword_and_location_search"
         %input{:name => "ls", :type => "hidden"}/
         %input{:name => "lc", :type => "hidden"}/

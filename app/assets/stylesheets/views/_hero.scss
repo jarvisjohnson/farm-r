@@ -242,6 +242,7 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
 
 .hero__keyword-search-input--combined {
   @extend .hero__search-input--combined;
+  -webkit-appearance: none;
 
   @media #{$mobile-landscape--hero}, #{$tablet--hero} {
     padding-right: 12px;
@@ -251,6 +252,7 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
 
 .hero__location-search-input--combined {
   @extend .hero__search-input--combined;
+  -webkit-appearance: none;
 
   @media #{$mobile-landscape--hero}, #{$tablet--hero} {
     border-radius: 0;
@@ -444,6 +446,9 @@ $tablet--hero: "(min-width: 480px) and (max-width: 767px)";
 .hero__search-icon--combined {
   @extend .hero__search-icon--base;
   display: none;
+  border-radius: 0;
+  line-height: initial;
+  margin: 0;
 
   @media #{$mobile-landscape--hero} {
     order: 0;
